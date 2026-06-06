@@ -948,4 +948,452 @@ function checkAndNotify() {
   // ── 8. WEEKLY NUDGE (Sunday 10 AM+) ─────────────────────
   if (dow===0 && mins>=10*60 && !notifiedToday('weekly')) {
     const stuck = [...papers,...projects].filter(p => p.done < p.stages.length-1);
-    pushNotify(`Weekly check: ${stuck.length} papers/projects need 
+    pushNotify(`Weekly check: ${stuck.length} papers/projects need progress. Open app → Pipeline.`, 'Weekly Review', 0);
+    markNotified('weekly');
+  }
+
+  // ── 9. CUSTOM ALARMS ─────────────────────────────────────
+  alarms.filter(a => a.active).forEach(alarm => {
+    const [ah, am] = alarm.time.split(':').map(Number);
+    const alarmMins = ah * 60 + am;
+    const diff = mins - alarmMins;
+
+    // Fire if we're within 0–29 minutes after alarm time
+    if (diff < 0 || diff >= 30) return;
+
+    // Check repeat type
+    const ok = alarm.repeat === 'daily'    ? true
+             : alarm.repeat === 'once'     ? true
+             : alarm.repeat === 'weekdays' ? (dow >= 1 && dow <= 5)
+             : alarm.repeat === 'weekends' ? (dow === 0 || dow === 6)
+             : true;
+    if (!ok) return;
+
+    const key = 'alarm_' + alarm.id;
+    if (notifiedToday(key)) return;
+
+    pushNotify('⏰ ' + alarm.label, 'Alarm', 1);
+    markNotified(key);
+    alarm.lastFired = today();
+
+    if (alarm.repeat === 'once') {
+      alarm.active = false;
+      renderAlarms();
+    }
+    saveAlarms();
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+//  TASKS
+// ════════════════════════════════════════════════════════════
+
+function addTask(fields) {
+  const task = { id:'u'+Date.now(), done:false, done_at:null, created_at:today(), priority:'normal', proj:'', date:'', cat:'personal', ...fields };
+  tasks.unshift(task);
+  syncTask(task);
+  renderToday();
+  toast('Task added ✓');
+}
+
+function toggleTask(id) {
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  t.done    = !t.done;
+  t.done_at = t.done ? today() : null;
+  syncTask(t);
+  renderToday();
+  renderStats();
+  if (t.done && t.proj) suggestNext(t.proj);
+}
+
+function delTask(id) {
+  tasks = tasks.filter(x => x.id !== id);
+  syncDeleteTask(id);
+  renderToday();
+}
+
+function quickAdd() {
+  const v = document.getElementById('quickInput').value.trim();
+  if (!v) return;
+  addTask({ title:v, cat:'personal', date:today() });
+  document.getElementById('quickInput').value = '';
+}
+
+function suggestNext(projId) {
+  const p = [...papers,...projects].find(x => x.id === projId);
+  if (p && p.stages[p.done+1]) setTimeout(() => toast(`Next for ${p.title}: "${p.stages[p.done+1]}"`), 500);
+}
+
+function renderToday() {
+  renderVitamins();
+  const t = today(), next7 = addDays(t,7);
+  const todayT   = tasks.filter(x => x.date === t);
+  const upcoming = tasks.filter(x => x.date && x.date > t && x.date <= next7 && !x.done);
+  const nodate   = tasks.filter(x => !x.date && !x.done);
+  document.getElementById('todayCnt').textContent = '('+todayT.filter(x=>!x.done).length+' left)';
+  document.getElementById('todayList').innerHTML    = todayT.length   ? todayT.map(taskCard).join('')   : '<div class="empty"><span class="e">🌿</span>Nothing today.</div>';
+  document.getElementById('upcomingList').innerHTML = upcoming.length  ? upcoming.map(taskCard).join('') : '<div class="empty" style="padding:10px 14px;font-size:12px;color:var(--muted)">Nothing in the next 7 days.</div>';
+  document.getElementById('nodateList').innerHTML   = nodate.length    ? nodate.map(taskCard).join('')   : '<div class="empty" style="padding:10px 14px;font-size:12px;color:var(--muted)">All caught up ✓</div>';
+}
+
+function taskCard(x) {
+  const du = x.date ? daysUntil(x.date) : null;
+  const overdue  = du !== null && du < 0 && !x.done;
+  const catLabel = {paper:'🔬 Paper',ai:'🤖 AI',health:'💊 Health',study:'📖 Study',work:'💼 Work',appointment:'📅 Appt',personal:'✦'}[x.cat]||x.cat;
+  const dateChip = x.date ? `<span class="chip chip-date${overdue||x.priority==='urgent'?' chip-urgent':''}">${du===0?'📅 today':overdue?'⚠ '+Math.abs(du)+'d ago':du===1?'⏰ tomorrow':fmt(x.date)}</span>` : '';
+  const prioChip = x.priority==='urgent' ? '<span class="chip chip-urgent">🔥</span>' : x.priority==='high' ? '<span class="chip" style="background:rgba(255,202,58,.1);color:var(--warn)">⚠</span>' : '';
+  const projChip = x.proj ? `<span class="chip" style="background:var(--s2);color:var(--muted)">${x.proj.toUpperCase()}</span>` : '';
+  return `
+    <div class="card card-row${x.done?' task-done':''}">
+      <div class="cb${x.done?' on':''}" onclick="toggleTask('${x.id}')"></div>
+      <div class="task-body">
+        <div class="task-title">${esc(x.title)}</div>
+        <div class="task-meta"><span class="chip chip-${x.cat}">${catLabel}</span>${prioChip}${dateChip}${projChip}</div>
+      </div>
+      <button class="del-btn" onclick="delTask('${x.id}')">✕</button>
+    </div>`;
+}
+
+// ════════════════════════════════════════════════════════════
+//  PIPELINE
+// ════════════════════════════════════════════════════════════
+
+function renderPipeline() {
+  document.getElementById('paperPipe').innerHTML = papers.map(pipeCard).join('');
+  document.getElementById('projPipe').innerHTML  = projects.map(pipeCard).join('');
+}
+
+function pipeCard(p) {
+  const pct = Math.round(p.done / (p.stages.length-1) * 100);
+  const dlChip = p.deadline ? `<span class="dl-chip">Due ${fmt(p.deadline)} (${daysUntil(p.deadline)>=0?daysUntil(p.deadline)+'d':'overdue'})</span>` : '';
+  const stagesHtml = p.stages.map((s,i) =>
+    `<span class="stage${i<p.done?' s-done':i===p.done?' s-current':''}">${i<p.done?'✓':i===p.done?'◉':'○'} ${s}</span>`
+  ).join('');
+  return `
+    <div class="pipe-card">
+      <div class="pipe-header">
+        <div>
+          <div class="pipe-title" style="color:${p.color||'var(--cyan)'}">${p.title}</div>
+          <div class="pipe-sub">${p.type||p.sub||''}</div>
+        </div>${dlChip}
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${p.color||'var(--cyan)'}"></div></div>
+      <div class="stages">${stagesHtml}</div>
+      <div class="pipe-note">${esc(p.note)}</div>
+      <button class="adv-btn" onclick="advanceStage('${p.id}')">Advance → ${p.stages[Math.min(p.done+1,p.stages.length-1)]}</button>
+    </div>`;
+}
+
+function advanceStage(id) {
+  const p = [...papers,...projects].find(x => x.id===id);
+  if (!p || p.done >= p.stages.length-1) { toast('Already at final stage'); return; }
+  p.done++;
+  syncPipelineItem(p);
+  renderPipeline();
+  toast('Advanced: '+p.stages[p.done]);
+}
+
+// ════════════════════════════════════════════════════════════
+//  REPORT
+// ════════════════════════════════════════════════════════════
+
+function renderStats() {
+  const done7 = tasks.filter(x => x.done && x.done_at >= addDays(today(),-7)).length;
+  const open  = tasks.filter(x => !x.done).length;
+  const vits  = Object.values(getVitLog()).filter(Boolean).length;
+  document.getElementById('statGrid').innerHTML = `
+    <div class="stat-box"><div class="stat-num" style="color:var(--ok)">${done7}</div><div class="stat-lbl">Done this week</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--warn)">${open}</div><div class="stat-lbl">Open tasks</div></div>
+    <div class="stat-box"><div class="stat-num" style="color:var(--purple)">${vits}/4</div><div class="stat-lbl">Vitamins today</div></div>`;
+}
+
+async function generateReport() {
+  if (!settings.openaiKey) { toast('Need OpenAI key in Settings', 'warn'); return; }
+  document.getElementById('reportBox').textContent = 'Generating…';
+  const done7 = tasks.filter(x => x.done && x.done_at >= addDays(today(),-7));
+  const prompt = `Generate Nafis's weekly review. Honest, warm, direct.
+DONE (${done7.length}): ${done7.map(x=>x.title).join('; ')||'none recorded'}
+OPEN: ${tasks.filter(x=>!x.done).slice(0,12).map(x=>x.title).join('; ')}
+PAPERS: ${papers.map(p=>p.title+': stage '+(p.done+1)+'/'+p.stages.length).join('; ')}
+PROJECTS: ${projects.map(p=>p.title+': stage '+(p.done+1)+'/'+p.stages.length).join('; ')}
+Write: (1) what got done, (2) what's stuck, (3) one focus for next week, (4) one genuine observation. Under 220 words.`;
+  try {
+    const r = await callOpenAI([{ role:'user', content:prompt }]);
+    document.getElementById('reportBox').textContent = r;
+  } catch(e) {
+    document.getElementById('reportBox').textContent = 'Error: ' + e.message;
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  AI CHAT
+// ════════════════════════════════════════════════════════════
+
+const AI_SYSTEM = `You are Nafis's personal AI assistant embedded in her life OS app.
+WHO SHE IS: Nafiseh Sami, final-year MD in Tehran, ortho intern → IM next. Building clinical AI (Mana, HALAJ). Wife of Hooman (PhD student). Works past 1 AM.
+PAPERS — needs weekly progress on each:
+1. BBB & Hyperglycemia — revision DUE JUNE 8 🔥
+2. GLP-1 & MS — waiting on team dedup → TiAb screening next
+3. SCI/TBI Sex Hormones — team meeting needed, full-text screening, edit Kasra's file
+4. FC in Diabetic Retinopathy — meet Melika+advisor+team, start extraction
+5. Candida Virulence (Mohammad's) — English editing
+6. Nigella Sativa — revision DUE JUNE 11 🔥
+AI PROJECTS: Mana (open to first 5 users next), HALAJ (docker setup), OSCE Tutor (parked)
+KEY DATES: June 7 night shift + Tina gift, June 11 Nigella+Negin bday, June 13 webinar, June 14 night shift+Tina bday, June 17 Hooman exam ❤️, June 21 night shift+ML starts+thesis starts, June 25 laser, June 28 Hooman exam 2 ❤️
+HEALTH: Iron 8AM, Omega-3+Eye vitamin 1PM, Mg 9PM. Exercise alt-day. Period ~July 3.
+JOB: Apply Outlier AI + Enago/Editage. Update LinkedIn + GitHub README.
+STYLE: Direct, short, warm. No fluff. Act, don't explain.
+ACTIONS — include JSON on its own when relevant:
+Add task:      {"ACTION":"add_task","title":"...","cat":"paper|ai|study|health|personal|appointment|work","date":"YYYY-MM-DD or empty","priority":"normal|high|urgent","proj":"bbb|glp1|sci|fc|candida|nigella|mana|halaj or empty"}
+Advance stage: {"ACTION":"advance","id":"bbb|glp1|sci|fc|candida|nigella|mana|halaj"}
+Multiple ACTION lines allowed. User won't see JSON — only the badges.`;
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg   = input.value.trim();
+  if (!msg) return;
+  if (!settings.openaiKey) { appendMsg('ai','Add your OpenAI key in Settings ⚙ — I need it to work.'); input.value=''; return; }
+  appendMsg('user', msg);
+  chatHistory.push({ role:'user', content:msg });
+  input.value = ''; input.style.height = 'auto';
+  showTyping(true);
+  try {
+    const reply = await callOpenAI(chatHistory.slice(-10));
+    chatHistory.push({ role:'assistant', content:reply });
+    showTyping(false);
+    const { clean, actions } = parseActions(reply);
+    appendMsg('ai', clean, actions);
+    actions.forEach(executeAction);
+    saveChatHistory();
+  } catch(e) { showTyping(false); appendMsg('ai','Error: '+e.message); }
+}
+
+function parseActions(text) {
+  const actions = [];
+  const clean = text.replace(/\{"ACTION":"[^"]+[^}]*\}/g, m => {
+    try { actions.push(JSON.parse(m)); } catch(e) {}
+    return '';
+  }).trim();
+  return { clean, actions };
+}
+
+function executeAction(a) {
+  if (a.ACTION==='add_task') addTask({ title:a.title, cat:a.cat||'personal', date:a.date||'', priority:a.priority||'normal', proj:a.proj||'' });
+  if (a.ACTION==='advance')  advanceStage(a.id);
+}
+
+async function callOpenAI(messages) {
+  const r = await fetch('https://api.openai.com/v1/chat/completions', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+settings.openaiKey },
+    body: JSON.stringify({
+      model: settings.model || 'gpt-4o-mini',
+      max_tokens: 400,
+      messages: [{ role:'system', content:AI_SYSTEM }, ...messages]
+    })
+  });
+  if (!r.ok) { const e=await r.json(); throw new Error(e.error?.message||r.statusText); }
+  const d = await r.json();
+  return d.choices[0].message.content;
+}
+
+function appendMsg(role, text, actions=[]) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  const badges = actions.map(a =>
+    `<span class="action-badge">${a.ACTION==='add_task'?'✓ Added: '+a.title:a.ACTION==='advance'?'↑ Advanced: '+a.id:a.ACTION}</span>`
+  ).join(' ');
+  div.innerHTML = `<div class="bubble">${mdToHtml(text)}${badges?'<br>'+badges:''}</div>`;
+  document.getElementById('chatMsgs').appendChild(div);
+  document.getElementById('chatMsgs').scrollTop = 9999;
+}
+
+function showTyping(on) {
+  document.getElementById('typingRow').style.display = on ? 'block' : 'none';
+  if (on) document.getElementById('chatMsgs').scrollTop = 9999;
+}
+function saveChatHistory() { localStorage.setItem('nos_chat', JSON.stringify(chatHistory.slice(-30))); }
+function loadChatHistory() { const h=localStorage.getItem('nos_chat'); if(h) chatHistory=JSON.parse(h); }
+
+// ════════════════════════════════════════════════════════════
+//  VOICE INPUT
+// ════════════════════════════════════════════════════════════
+
+function toggleVoice(target) {
+  if (!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)) {
+    toast('Voice not supported — use Chrome or Safari','warn'); return;
+  }
+  const btn   = document.getElementById(target==='quick'?'quickMic':'chatMic');
+  const field = document.getElementById(target==='quick'?'quickInput':'chatInput');
+  if (listeningTarget===target) {
+    recognition?.stop(); listeningTarget=null; btn.classList.remove('on'); btn.textContent='🎤'; return;
+  }
+  recognition?.stop();
+  const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.continuous=true; recognition.interimResults=true; recognition.lang='en-US';
+  listeningTarget=target; btn.classList.add('on'); btn.textContent='⏹';
+  let baseText = field.value;
+  recognition.onresult = e => {
+    let final='', interim='';
+    for (let i=e.resultIndex;i<e.results.length;i++) {
+      if (e.results[i].isFinal) final+=e.results[i][0].transcript;
+      else interim+=e.results[i][0].transcript;
+    }
+    if (final) baseText+=final;
+    field.value = baseText+interim;
+    if (target==='chat') autoResize(field);
+  };
+  recognition.onerror = () => { listeningTarget=null; btn.classList.remove('on'); btn.textContent='🎤'; };
+  recognition.onend   = () => { if (listeningTarget===target) recognition.start(); };
+  recognition.start();
+}
+
+// ════════════════════════════════════════════════════════════
+//  SETTINGS
+// ════════════════════════════════════════════════════════════
+
+function openSettings() {
+  document.getElementById('sbUrl').value   = settings.sbUrl    ||'';
+  document.getElementById('sbKey').value   = settings.sbKey    ||'';
+  document.getElementById('apiKey').value  = settings.openaiKey||'';
+  document.getElementById('aiModel').value = settings.model    ||'gpt-4o-mini';
+  document.getElementById('puUser').value  = settings.puUser   ||'';
+  document.getElementById('puToken').value = settings.puToken  ||'';
+  document.getElementById('drawerOverlay').classList.add('show');
+  setSyncDot(SB.ready?'':'offline', SB.ready?'Connected ✓':'Not configured');
+}
+function closeSettings() { document.getElementById('drawerOverlay').classList.remove('show'); }
+
+async function forceSync() {
+  if (!SB.ready) { toast('No Supabase — add keys in ⚙','warn'); return; }
+  const btn = document.getElementById('refreshBtn');
+  btn.style.animation = 'spin .6s linear infinite';
+  setSyncDot('syncing','Fetching latest…');
+  try {
+    const [sbTasks,sbPipe] = await Promise.all([
+      SB.get('tasks','select=*&order=created_at.desc'),
+      SB.get('pipeline','select=*')
+    ]);
+    if (sbTasks.length) { tasks=sbTasks; localStorage.setItem('nos_tasks',JSON.stringify(tasks)); }
+    sbPipe.forEach(row => { const p=[...papers,...projects].find(x=>x.id===row.id); if(p) p.done=row.done_stages; });
+    setSyncDot('','Synced ✓');
+    renderToday(); renderPipeline(); renderStats();
+    toast('Refreshed ✓');
+  } catch(e) {
+    console.error('Supabase forceSync error:',e.message);
+    setSyncDot('error',e.message);
+    toast('Refresh failed: '+e.message,'warn',6000);
+  } finally { btn.style.animation=''; }
+}
+
+async function saveSettings() {
+  settings.sbUrl     = document.getElementById('sbUrl').value.trim();
+  settings.sbKey     = document.getElementById('sbKey').value.trim();
+  settings.openaiKey = document.getElementById('apiKey').value.trim();
+  settings.model     = document.getElementById('aiModel').value;
+  settings.puUser    = document.getElementById('puUser').value.trim();
+  settings.puToken   = document.getElementById('puToken').value.trim();
+  localStorage.setItem('nos_settings', JSON.stringify(settings));
+  SB.init(settings.sbUrl, settings.sbKey);
+  if (SB.ready) {
+    setSyncDot('syncing','Pushing to Supabase…');
+    try {
+      if (tasks.length) await SB.upsert('tasks', tasks);
+      const pd = [...papers,...projects].map(x=>({ id:x.id, done_stages:x.done, note:x.note, dtype:PAPERS_DEF.find(p=>p.id===x.id)?'paper':'project' }));
+      await SB.upsert('pipeline', pd);
+      setSyncDot('','Synced ✓');
+      toast('Synced to Supabase ✓');
+    } catch(e) { setSyncDot('error',e.message); toast('Sync error: '+e.message,'warn'); }
+  }
+  closeSettings();
+  toast('Settings saved');
+}
+
+// ════════════════════════════════════════════════════════════
+//  NAV
+// ════════════════════════════════════════════════════════════
+
+function showPanel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (id==='today')    renderToday();
+  if (id==='pipeline') renderPipeline();
+  if (id==='report')   renderStats();
+}
+
+// ════════════════════════════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════════════════════════════
+
+function today()        { return new Date().toISOString().slice(0,10); }
+function addDays(d,n)   { const x=new Date(d+'T12:00:00'); x.setDate(x.getDate()+n); return x.toISOString().slice(0,10); }
+function daysUntil(d)   { return Math.ceil((new Date(d+'T12:00:00')-new Date(today()+'T12:00:00'))/86400000); }
+function fmt(d)         { return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+function esc(s)         { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function autoResize(el) { el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,100)+'px'; }
+function mdToHtml(s)    { return esc(s).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/\n/g,'<br>'); }
+
+let toastT;
+function toast(msg, type='ok', duration=2800) {
+  const el = document.getElementById('toast');
+  el.textContent       = msg;
+  el.style.borderColor = type==='warn' ? 'var(--warn)' : 'var(--cyan)';
+  el.style.color       = type==='warn' ? 'var(--warn)' : 'var(--cyan)';
+  el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// ════════════════════════════════════════════════════════════
+//  APP ICON (generated via canvas — no external file needed)
+// ════════════════════════════════════════════════════════════
+
+function setAppIcon() {
+  // Wrapped in try-catch: if canvas fails on older iOS, the app still loads normally
+  try {
+    const c = document.createElement('canvas');
+    c.width = c.height = 180;
+    const x = c.getContext('2d');
+    const g = x.createLinearGradient(0,0,180,180);
+    g.addColorStop(0,'#0a1929'); g.addColorStop(1,'#00c8e0');
+    x.fillStyle = g;
+    // Manual rounded rect — replaces roundRect() which isn't in older Safari
+    const rad = 38, s = 180;
+    x.beginPath();
+    x.moveTo(rad, 0);
+    x.lineTo(s-rad, 0);   x.quadraticCurveTo(s, 0,   s,   rad);
+    x.lineTo(s, s-rad);   x.quadraticCurveTo(s, s,   s-rad, s);
+    x.lineTo(rad, s);     x.quadraticCurveTo(0, s,   0,   s-rad);
+    x.lineTo(0, rad);     x.quadraticCurveTo(0, 0,   rad, 0);
+    x.closePath();
+    x.fill();
+    x.beginPath(); x.arc(90,90,52,0,Math.PI*2);
+    x.strokeStyle='rgba(0,200,224,0.35)'; x.lineWidth=18; x.stroke();
+    x.fillStyle='#00c8e0';
+    x.font='bold 88px -apple-system,system-ui';
+    x.textAlign='center'; x.textBaseline='middle';
+    x.fillText('N',90,93);
+    const link = document.querySelector("link[rel='apple-touch-icon']")||document.createElement('link');
+    link.rel='apple-touch-icon'; link.href=c.toDataURL('image/png');
+    document.head.appendChild(link);
+  } catch(e) {
+    console.warn('Icon skipped (canvas not supported):', e.message);
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  START
+// ════════════════════════════════════════════════════════════
+
+setAppIcon();
+init().then(() => {
+  checkAndNotify();                              // check on startup
+  setInterval(checkAndNotify, 30 * 60 * 1000);  // check every 30 minutes
+});
+</script>
+</body>
+</html>
