@@ -452,7 +452,10 @@ const SB = {
 
   // SELECT * FROM table WHERE {query}
   async get(table, query = '') {
-    const r = await fetch(`${this.url}/rest/v1/${table}?${query}`, { headers: this._h() });
+    const r = await fetch(`${this.url}/rest/v1/${table}?${query}`, {
+      headers: this._h(),
+      cache: 'no-store'   // always fetch fresh — prevents browser caching stale data
+    });
     if (!r.ok) throw new Error(await r.text());
     return r.json();
   },
