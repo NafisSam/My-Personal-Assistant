@@ -31,10 +31,9 @@
   --f:     'Inter', system-ui, sans-serif;
 }
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
-/* iOS standalone mode: use dvh and safe-area insets */
-html { height: 100dvh; height: -webkit-fill-available; }
+html { height:100dvh; height:-webkit-fill-available; }
 body { font-family:var(--f); background:var(--bg); color:var(--text); display:flex; flex-direction:column;
-       height: 100dvh; height: -webkit-fill-available; overflow:hidden; }
+       height:100dvh; height:-webkit-fill-available; overflow:hidden; }
 ::-webkit-scrollbar { width:4px }
 ::-webkit-scrollbar-thumb { background:var(--bd); border-radius:4px }
 ::selection { background:var(--cyan); color:#000 }
@@ -45,32 +44,36 @@ body { font-family:var(--f); background:var(--bg); color:var(--text); display:fl
 .panel.active { display:block }
 
 /* ─── TOPBAR ─── */
-/* padding-top: safe-area pushes content below iOS status bar in standalone mode */
 .topbar { padding:14px 18px 10px; padding-top:calc(14px + env(safe-area-inset-top));
           background:var(--bg); position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(20,47,80,.5) }
 .topbar-row { display:flex; align-items:center; justify-content:space-between; gap:8px }
-.greeting { font-size:19px; font-weight:800; letter-spacing:-.02em; background:linear-gradient(90deg,var(--cyan),var(--teal)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text }
+.greeting { font-size:19px; font-weight:800; letter-spacing:-.02em;
+            background:linear-gradient(90deg,var(--cyan),var(--teal));
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text }
 .today-date { font-size:11px; color:var(--muted); margin-top:1px }
 .topbar-right { display:flex; align-items:center; gap:8px }
-/* Sync indicator dot */
 .sync-dot { width:7px; height:7px; border-radius:50%; background:var(--ok); transition:background .3s; flex-shrink:0 }
 .sync-dot.syncing { background:var(--warn); animation:blink2 1s infinite }
 .sync-dot.error   { background:var(--danger) }
 .sync-dot.offline { background:var(--muted) }
 @keyframes blink2 { 0%,100%{opacity:1} 50%{opacity:.3} }
-.gear-btn { background:var(--s2); border:1px solid var(--bd); border-radius:8px; color:var(--muted); padding:6px 8px; cursor:pointer; font-size:14px; transition:color .15s }
+.gear-btn { background:var(--s2); border:1px solid var(--bd); border-radius:8px; color:var(--muted);
+            padding:6px 8px; cursor:pointer; font-size:14px; transition:color .15s }
 .gear-btn:hover { color:var(--cyan) }
-@keyframes spin { to { transform: rotate(360deg) } }
+@keyframes spin { to { transform:rotate(360deg) } }
 
 /* ─── TABS ─── */
-/* height + safe-area-inset-bottom ensures tabs sit above iPhone home indicator */
-.tab-bar { height:calc(58px + env(safe-area-inset-bottom)); background:var(--s1); border-top:1px solid var(--bd); display:flex; flex-shrink:0; z-index:100; padding-bottom:env(safe-area-inset-bottom) }
-.tab { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; border:none; background:none; color:var(--muted); font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; cursor:pointer; transition:color .15s }
+.tab-bar { height:calc(58px + env(safe-area-inset-bottom)); background:var(--s1); border-top:1px solid var(--bd);
+           display:flex; flex-shrink:0; z-index:100; padding-bottom:env(safe-area-inset-bottom) }
+.tab { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px;
+       border:none; background:none; color:var(--muted); font-size:9px; font-weight:700;
+       text-transform:uppercase; letter-spacing:.05em; cursor:pointer; transition:color .15s }
 .tab .icon { font-size:17px }
 .tab.active { color:var(--cyan) }
 
 /* ─── BANNERS ─── */
-.banner { margin:10px 14px 0; border-radius:var(--r); padding:11px 13px; font-size:13px; line-height:1.5; display:none; animation:fadein .3s ease }
+.banner { margin:10px 14px 0; border-radius:var(--r); padding:11px 13px; font-size:13px;
+          line-height:1.5; display:none; animation:fadein .3s ease }
 .banner.show { display:block }
 @keyframes fadein { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:none} }
 .banner-shift    { background:rgba(239,69,101,.08); border:1px solid rgba(239,69,101,.4); color:#fca5a5 }
@@ -86,7 +89,8 @@ body { font-family:var(--f); background:var(--bg); color:var(--text); display:fl
 .card { background:var(--s1); border:1px solid var(--bd); border-radius:var(--r); margin:0 14px 7px; padding:12px 13px; transition:border-color .15s }
 .card:hover { border-color:var(--s3) }
 .card-row { display:flex; align-items:flex-start; gap:9px }
-.cb { width:17px; height:17px; border:1.5px solid var(--bd); border-radius:5px; cursor:pointer; flex-shrink:0; margin-top:2px; display:flex; align-items:center; justify-content:center; transition:all .15s }
+.cb { width:17px; height:17px; border:1.5px solid var(--bd); border-radius:5px; cursor:pointer;
+      flex-shrink:0; margin-top:2px; display:flex; align-items:center; justify-content:center; transition:all .15s }
 .cb:hover { border-color:var(--cyan) }
 .cb.on { background:var(--cyan); border-color:var(--cyan) }
 .cb.on::after { content:'✓'; font-size:10px; font-weight:800; color:#000 }
@@ -95,78 +99,138 @@ body { font-family:var(--f); background:var(--bg); color:var(--text); display:fl
 .task-done .task-title { text-decoration:line-through; color:var(--muted) }
 .task-meta { display:flex; flex-wrap:wrap; gap:4px; margin-top:5px }
 .chip { font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px }
-.chip-paper       { background:rgba(6,214,160,.1); color:var(--ok) }
-.chip-ai          { background:rgba(0,200,224,.1); color:var(--cyan) }
-.chip-health      { background:rgba(255,202,58,.1); color:var(--warn) }
+.chip-paper       { background:rgba(6,214,160,.1);   color:var(--ok) }
+.chip-ai          { background:rgba(0,200,224,.1);   color:var(--cyan) }
+.chip-health      { background:rgba(255,202,58,.1);  color:var(--warn) }
 .chip-study       { background:rgba(167,139,250,.1); color:var(--purple) }
-.chip-work        { background:rgba(245,158,11,.1); color:var(--orange) }
-.chip-appointment { background:rgba(239,69,101,.1); color:var(--danger) }
+.chip-work        { background:rgba(245,158,11,.1);  color:var(--orange) }
+.chip-appointment { background:rgba(239,69,101,.1);  color:var(--danger) }
 .chip-personal    { background:rgba(61,122,148,.15); color:var(--muted) }
 .chip-date        { background:var(--s2); color:var(--muted) }
 .chip-urgent      { background:rgba(239,69,101,.15); color:var(--danger) }
-.del-btn { background:none; border:none; color:transparent; cursor:pointer; font-size:12px; padding:2px 4px; border-radius:4px; flex-shrink:0; transition:color .15s; margin-top:1px }
+.del-btn { background:none; border:none; color:transparent; cursor:pointer; font-size:12px;
+           padding:2px 4px; border-radius:4px; flex-shrink:0; transition:color .15s; margin-top:1px }
 .card:hover .del-btn { color:var(--muted) }
 .del-btn:hover { color:var(--danger)!important }
 
 /* ─── VITAMINS ─── */
 .vit-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; padding:0 14px 4px }
-.vit-card { background:var(--s1); border:1px solid var(--bd); border-radius:var(--r); padding:11px; cursor:pointer; transition:all .15s; text-align:center }
+.vit-card { background:var(--s1); border:1px solid var(--bd); border-radius:var(--r);
+            padding:11px; cursor:pointer; transition:all .15s; text-align:center }
 .vit-card:hover { border-color:var(--cyan) }
 .vit-card.done { opacity:.45; border-color:var(--ok) }
 .vit-icon { font-size:20px; margin-bottom:3px }
 .vit-name { font-size:11px; font-weight:700 }
 .vit-time { font-size:10px; color:var(--muted) }
 
+/* ─── ALARMS ─── */
+.alarm-add-row { display:flex; gap:6px; margin:0 14px 8px; flex-wrap:wrap; align-items:center }
+.alarm-time-in  { background:var(--s1); border:1px solid var(--bd); border-radius:8px;
+                  color:var(--cyan); font-size:14px; font-weight:700; padding:7px 10px;
+                  outline:none; font-family:var(--f); width:105px;
+                  color-scheme:dark }
+.alarm-lbl-in   { flex:1; background:var(--s1); border:1px solid var(--bd); border-radius:8px;
+                  color:var(--text); font-size:13px; padding:7px 10px; outline:none;
+                  font-family:var(--f); min-width:90px }
+.alarm-lbl-in::placeholder { color:var(--muted) }
+.alarm-rep-sel  { background:var(--s1); border:1px solid var(--bd); border-radius:8px;
+                  color:var(--muted); font-size:12px; padding:7px 8px; outline:none; cursor:pointer }
+.alarm-rep-sel option { background:var(--s2) }
+.alarm-add-btn  { background:var(--cyan); border:none; border-radius:8px; color:#000;
+                  font-size:18px; font-weight:700; width:36px; height:36px;
+                  cursor:pointer; flex-shrink:0; transition:opacity .15s }
+.alarm-add-btn:hover { opacity:.85 }
+.alarm-item { background:var(--s1); border:1px solid var(--bd); border-radius:10px;
+              margin:0 14px 6px; padding:10px 13px; display:flex; align-items:center; gap:10px }
+.alarm-item.off { opacity:.45 }
+.alarm-t    { font-size:18px; font-weight:800; color:var(--cyan);
+              font-variant-numeric:tabular-nums; min-width:68px }
+.alarm-body { flex:1 }
+.alarm-name { font-size:13px; font-weight:500 }
+.alarm-rep  { font-size:10px; color:var(--muted); margin-top:1px }
+/* Toggle switch */
+.a-toggle { background:var(--s2); border:1px solid var(--bd); border-radius:20px;
+            width:36px; height:20px; cursor:pointer; position:relative;
+            transition:all .2s; flex-shrink:0 }
+.a-toggle.on { background:var(--cyan); border-color:var(--cyan) }
+.a-toggle::after { content:''; position:absolute; top:2px; left:2px;
+                   width:14px; height:14px; border-radius:50%; background:#fff; transition:left .2s }
+.a-toggle.on::after { left:20px }
+.alarm-del  { background:none; border:none; color:transparent; cursor:pointer;
+              font-size:12px; padding:3px 5px; border-radius:4px; transition:color .15s }
+.alarm-item:hover .alarm-del { color:var(--muted) }
+.alarm-del:hover { color:var(--danger)!important }
+
 /* ─── QUICK ADD ─── */
 .quick-row { display:flex; gap:7px; margin:0 14px 10px; align-items:center }
-.quick-input { flex:1; background:var(--s1); border:1px solid var(--bd); border-radius:10px; color:var(--text); font-size:14px; padding:9px 13px; outline:none; font-family:var(--f); transition:border-color .2s }
+.quick-input { flex:1; background:var(--s1); border:1px solid var(--bd); border-radius:10px;
+               color:var(--text); font-size:14px; padding:9px 13px; outline:none;
+               font-family:var(--f); transition:border-color .2s }
 .quick-input:focus { border-color:var(--cyan) }
 .quick-input::placeholder { color:var(--muted) }
-.mic-btn { background:rgba(0,200,224,.12); border:1px solid rgba(0,200,224,.25); border-radius:10px; color:var(--cyan); width:40px; height:40px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px; transition:all .2s; flex-shrink:0 }
+.mic-btn { background:rgba(0,200,224,.12); border:1px solid rgba(0,200,224,.25); border-radius:10px;
+           color:var(--cyan); width:40px; height:40px; display:flex; align-items:center;
+           justify-content:center; cursor:pointer; font-size:15px; transition:all .2s; flex-shrink:0 }
 .mic-btn:hover,.mic-btn.on { background:rgba(0,200,224,.25); border-color:var(--cyan) }
 .mic-btn.on { animation:pulse 1.2s infinite }
 @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(0,200,224,.4)} 50%{box-shadow:0 0 0 8px rgba(0,200,224,0)} }
 
 /* ─── CHAT ─── */
-.chat-wrap { display:flex; flex-direction:column; height:calc(100vh - 170px) }
-.chat-msgs { flex:1; overflow-y:auto; padding:14px 14px 6px }
-.msg { max-width:88%; margin-bottom:10px; animation:fadein .2s ease }
-.msg.user { margin-left:auto }
-.msg.user .bubble  { background:var(--cyan); color:#000; border-radius:16px 16px 4px 16px }
-.msg.ai   .bubble  { background:var(--s1); border:1px solid var(--bd); color:var(--text); border-radius:4px 16px 16px 16px }
-.bubble { padding:9px 12px; font-size:14px; line-height:1.55; word-break:break-word }
+.chat-wrap  { display:flex; flex-direction:column; height:calc(100dvh - 170px) }
+.chat-msgs  { flex:1; overflow-y:auto; padding:14px 14px 6px }
+.msg        { max-width:88%; margin-bottom:10px; animation:fadein .2s ease }
+.msg.user   { margin-left:auto }
+.msg.user .bubble { background:var(--cyan); color:#000; border-radius:16px 16px 4px 16px }
+.msg.ai   .bubble { background:var(--s1); border:1px solid var(--bd); color:var(--text); border-radius:4px 16px 16px 16px }
+.bubble   { padding:9px 12px; font-size:14px; line-height:1.55; word-break:break-word }
 .bubble strong { font-weight:700 }
-.action-badge { display:inline-block; margin-top:5px; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:700; background:rgba(6,214,160,.15); color:var(--ok); border:1px solid rgba(6,214,160,.3) }
+.action-badge { display:inline-block; margin-top:5px; padding:3px 9px; border-radius:20px;
+                font-size:11px; font-weight:700; background:rgba(6,214,160,.15);
+                color:var(--ok); border:1px solid rgba(6,214,160,.3) }
 .typing-row { padding:0 14px 6px; display:none }
-.typing { display:inline-flex; align-items:center; gap:4px; padding:9px 12px; background:var(--s1); border:1px solid var(--bd); border-radius:4px 14px 14px 14px }
+.typing { display:inline-flex; align-items:center; gap:4px; padding:9px 12px;
+          background:var(--s1); border:1px solid var(--bd); border-radius:4px 14px 14px 14px }
 .dot { width:5px; height:5px; background:var(--muted); border-radius:50%; animation:blink 1.2s infinite }
 .dot:nth-child(2){animation-delay:.2s} .dot:nth-child(3){animation-delay:.4s}
 @keyframes blink { 0%,80%,100%{opacity:.2} 40%{opacity:1} }
-.chat-foot { padding:10px 14px; border-top:1px solid var(--bd); background:var(--bg); display:flex; gap:7px; align-items:flex-end; padding-bottom:calc(10px + env(safe-area-inset-bottom)) }
-.chat-ta { flex:1; background:var(--s1); border:1px solid var(--bd); border-radius:10px; color:var(--text); font-size:14px; padding:9px 12px; outline:none; resize:none; font-family:var(--f); max-height:100px; overflow-y:auto; line-height:1.45; transition:border-color .2s }
+.chat-foot { padding:10px 14px; border-top:1px solid var(--bd); background:var(--bg);
+             display:flex; gap:7px; align-items:flex-end;
+             padding-bottom:calc(10px + env(safe-area-inset-bottom)) }
+.chat-ta { flex:1; background:var(--s1); border:1px solid var(--bd); border-radius:10px;
+           color:var(--text); font-size:14px; padding:9px 12px; outline:none; resize:none;
+           font-family:var(--f); max-height:100px; overflow-y:auto; line-height:1.45; transition:border-color .2s }
 .chat-ta:focus { border-color:var(--cyan) }
 .chat-ta::placeholder { color:var(--muted) }
-.send-btn { background:var(--cyan); border:none; border-radius:10px; color:#000; width:38px; height:38px; cursor:pointer; font-size:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:opacity .15s }
+.send-btn { background:var(--cyan); border:none; border-radius:10px; color:#000;
+            width:38px; height:38px; cursor:pointer; font-size:15px;
+            display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:opacity .15s }
 .send-btn:hover { opacity:.85 }
-.chat-mic { background:var(--s2); border:1px solid var(--bd); border-radius:10px; color:var(--muted); width:38px; height:38px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px; flex-shrink:0; transition:all .15s }
+.chat-mic { background:var(--s2); border:1px solid var(--bd); border-radius:10px; color:var(--muted);
+            width:38px; height:38px; display:flex; align-items:center; justify-content:center;
+            cursor:pointer; font-size:15px; flex-shrink:0; transition:all .15s }
 .chat-mic:hover,.chat-mic.on { border-color:var(--cyan); color:var(--cyan) }
 .chat-mic.on { animation:pulse 1.2s infinite }
 
 /* ─── PIPELINE ─── */
-.pipe-card { background:var(--s1); border:1px solid var(--bd); border-radius:var(--r); margin:0 14px 9px; padding:13px; overflow:hidden }
+.pipe-card { background:var(--s1); border:1px solid var(--bd); border-radius:var(--r);
+             margin:0 14px 9px; padding:13px; overflow:hidden }
 .pipe-header { display:flex; align-items:flex-start; justify-content:space-between; gap:7px; margin-bottom:9px }
 .pipe-title { font-size:13px; font-weight:700 }
-.pipe-sub { font-size:10px; color:var(--muted); margin-top:1px }
-.dl-chip { font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px; background:rgba(239,69,101,.12); color:var(--danger); border:1px solid rgba(239,69,101,.3); white-space:nowrap; flex-shrink:0 }
-.prog-bar { height:3px; background:var(--s2); border-radius:3px; margin-bottom:8px }
+.pipe-sub   { font-size:10px; color:var(--muted); margin-top:1px }
+.dl-chip { font-size:10px; font-weight:700; padding:3px 8px; border-radius:20px;
+           background:rgba(239,69,101,.12); color:var(--danger);
+           border:1px solid rgba(239,69,101,.3); white-space:nowrap; flex-shrink:0 }
+.prog-bar  { height:3px; background:var(--s2); border-radius:3px; margin-bottom:8px }
 .prog-fill { height:100%; border-radius:3px; transition:width .4s ease }
-.stages { display:flex; gap:3px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; margin-bottom:7px }
+.stages    { display:flex; gap:3px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; margin-bottom:7px }
 .stages::-webkit-scrollbar { display:none }
-.stage { font-size:9px; font-weight:700; padding:3px 7px; border-radius:20px; white-space:nowrap; flex-shrink:0; background:var(--s2); color:var(--muted); border:1px solid transparent; transition:all .15s }
-.stage.s-done    { background:rgba(6,214,160,.1); color:var(--ok); border-color:rgba(6,214,160,.2) }
+.stage { font-size:9px; font-weight:700; padding:3px 7px; border-radius:20px; white-space:nowrap;
+         flex-shrink:0; background:var(--s2); color:var(--muted); border:1px solid transparent; transition:all .15s }
+.stage.s-done    { background:rgba(6,214,160,.1);  color:var(--ok);  border-color:rgba(6,214,160,.2) }
 .stage.s-current { border-color:var(--cyan); color:var(--cyan); background:rgba(0,200,224,.08) }
 .pipe-note { font-size:11px; color:var(--muted); line-height:1.5; margin-bottom:9px }
-.adv-btn { background:none; border:1px solid var(--bd); border-radius:7px; color:var(--muted); font-size:11px; font-weight:700; padding:5px 11px; cursor:pointer; transition:all .15s; width:100% }
+.adv-btn   { background:none; border:1px solid var(--bd); border-radius:7px; color:var(--muted);
+             font-size:11px; font-weight:700; padding:5px 11px; cursor:pointer; transition:all .15s; width:100% }
 .adv-btn:hover { border-color:var(--cyan); color:var(--cyan) }
 
 /* ─── REPORT ─── */
@@ -174,29 +238,46 @@ body { font-family:var(--f); background:var(--bg); color:var(--text); display:fl
 .stat-box  { background:var(--s1); border:1px solid var(--bd); border-radius:10px; padding:11px; text-align:center }
 .stat-num  { font-size:22px; font-weight:800 }
 .stat-lbl  { font-size:9px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-top:2px }
-.report-btn { margin:0 14px; background:var(--cyan); border:none; border-radius:10px; color:#000; font-size:14px; font-weight:700; padding:11px; cursor:pointer; width:calc(100% - 28px); transition:opacity .15s }
+.report-btn { margin:0 14px; background:var(--cyan); border:none; border-radius:10px;
+              color:#000; font-size:14px; font-weight:700; padding:11px; cursor:pointer;
+              width:calc(100% - 28px); transition:opacity .15s }
 .report-btn:hover { opacity:.85 }
-.report-box { margin:12px 14px 0; background:var(--s1); border:1px solid var(--bd); border-radius:var(--r); padding:16px; min-height:160px; font-size:13px; line-height:1.65; white-space:pre-wrap }
+.report-box { margin:12px 14px 0; background:var(--s1); border:1px solid var(--bd);
+              border-radius:var(--r); padding:16px; min-height:160px;
+              font-size:13px; line-height:1.65; white-space:pre-wrap }
 
-/* ─── DRAWER (Settings) ─── */
+/* ─── DRAWER ─── */
 .drawer-overlay { position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:200; display:none; align-items:flex-end }
 .drawer-overlay.show { display:flex }
-.drawer { background:var(--s1); border-top:1px solid var(--bd); border-radius:20px 20px 0 0; padding:20px 18px 40px; width:100%; max-height:85vh; overflow-y:auto }
+.drawer { background:var(--s1); border-top:1px solid var(--bd); border-radius:20px 20px 0 0;
+          padding:20px 18px 40px; width:100%; max-height:85vh; overflow-y:auto }
 .drawer h2 { font-size:15px; font-weight:800; margin-bottom:16px }
-.sep { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--cyan); margin:16px 0 10px; padding-bottom:4px; border-bottom:1px solid var(--bd) }
-.field-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:4px; display:block }
-.field { width:100%; background:var(--s2); border:1px solid var(--bd); border-radius:9px; color:var(--text); font-size:13px; padding:9px 11px; outline:none; font-family:var(--f); margin-bottom:11px; transition:border-color .2s }
+.sep { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+       color:var(--cyan); margin:16px 0 10px; padding-bottom:4px; border-bottom:1px solid var(--bd) }
+.field-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+             color:var(--muted); margin-bottom:4px; display:block }
+.field { width:100%; background:var(--s2); border:1px solid var(--bd); border-radius:9px;
+         color:var(--text); font-size:13px; padding:9px 11px; outline:none;
+         font-family:var(--f); margin-bottom:11px; transition:border-color .2s }
 .field:focus { border-color:var(--cyan) }
 .field-note { font-size:11px; color:var(--muted); margin-top:-7px; margin-bottom:11px; line-height:1.5 }
-.save-btn { width:100%; background:var(--cyan); border:none; border-radius:10px; color:#000; font-size:14px; font-weight:700; padding:11px; cursor:pointer; transition:opacity .15s; margin-top:4px }
+.save-btn { width:100%; background:var(--cyan); border:none; border-radius:10px;
+            color:#000; font-size:14px; font-weight:700; padding:11px;
+            cursor:pointer; transition:opacity .15s; margin-top:4px }
 .save-btn:hover { opacity:.85 }
-.info-box { background:var(--s2); border:1px solid var(--bd); border-radius:9px; padding:11px; font-size:11px; color:var(--muted); line-height:1.6; margin-bottom:11px }
+.info-box { background:var(--s2); border:1px solid var(--bd); border-radius:9px;
+            padding:11px; font-size:11px; color:var(--muted); line-height:1.6; margin-bottom:11px }
 .info-box strong { color:var(--cyan) }
-/* Sync status in settings */
-.sync-status-row { display:flex; align-items:center; gap:8px; padding:8px 11px; background:var(--s2); border:1px solid var(--bd); border-radius:9px; margin-bottom:11px; font-size:12px; color:var(--muted) }
+.sync-status-row { display:flex; align-items:center; gap:8px; padding:8px 11px;
+                   background:var(--s2); border:1px solid var(--bd);
+                   border-radius:9px; margin-bottom:11px; font-size:12px; color:var(--muted) }
 
 /* ─── TOAST ─── */
-#toast { position:fixed; bottom:70px; left:50%; transform:translateX(-50%) translateY(8px); background:var(--s1); border:1px solid var(--cyan); color:var(--cyan); padding:8px 16px; border-radius:20px; font-size:12px; opacity:0; transition:all .3s cubic-bezier(.34,1.56,.64,1); pointer-events:none; z-index:999; white-space:nowrap }
+#toast { position:fixed; bottom:70px; left:50%; transform:translateX(-50%) translateY(8px);
+         background:var(--s1); border:1px solid var(--cyan); color:var(--cyan);
+         padding:8px 16px; border-radius:20px; font-size:12px; opacity:0;
+         transition:all .3s cubic-bezier(.34,1.56,.64,1); pointer-events:none; z-index:999;
+         max-width:90vw; white-space:normal; text-align:center }
 #toast.show { opacity:1; transform:translateX(-50%) translateY(0) }
 
 /* ─── EMPTY ─── */
@@ -232,9 +313,26 @@ body { font-family:var(--f); background:var(--bg); color:var(--text); display:fl
     <div class="sect">💊 Vitamins</div>
     <div class="vit-grid" id="vitGrid"></div>
 
+    <!-- ALARMS -->
+    <div class="sect">⏰ Alarms</div>
+    <div class="alarm-add-row">
+      <input type="time" id="alarmTime" class="alarm-time-in" value="08:00"/>
+      <input type="text" id="alarmLabel" class="alarm-lbl-in" placeholder="Label…"
+             onkeydown="if(event.key==='Enter')addAlarm()"/>
+      <select id="alarmRepeat" class="alarm-rep-sel">
+        <option value="daily">Daily</option>
+        <option value="once">Once</option>
+        <option value="weekdays">Weekdays</option>
+        <option value="weekends">Weekends</option>
+      </select>
+      <button class="alarm-add-btn" onclick="addAlarm()">+</button>
+    </div>
+    <div id="alarmList"></div>
+
     <div class="sect">✦ Quick Add</div>
     <div class="quick-row">
-      <input class="quick-input" id="quickInput" placeholder="Add a task… or 🎤" onkeydown="if(event.key==='Enter')quickAdd()"/>
+      <input class="quick-input" id="quickInput" placeholder="Add a task… or 🎤"
+             onkeydown="if(event.key==='Enter')quickAdd()"/>
       <button class="mic-btn" id="quickMic" onclick="toggleVoice('quick')">🎤</button>
     </div>
 
@@ -250,7 +348,9 @@ body { font-family:var(--f); background:var(--bg); color:var(--text); display:fl
   <div id="panel-talk" class="panel">
     <div class="chat-wrap">
       <div class="chat-msgs" id="chatMsgs">
-        <div class="msg ai"><div class="bubble">Hey Nafis. I know your papers, projects, schedule, everything.<br><br>Just talk: <em>"I met with Melika about FC"</em>, or <em>"add a task to call Kasra"</em>, or <em>"what should I focus on today?"</em><br><br>I'll act on it.</div></div>
+        <div class="msg ai"><div class="bubble">Hey Nafis. I know your papers, projects, schedule, everything.<br><br>
+        Just talk: <em>"I met with Melika about FC"</em>, or <em>"add a task to call Kasra"</em>, or <em>"what should I focus on today?"</em><br><br>
+        I'll act on it.</div></div>
       </div>
       <div class="typing-row" id="typingRow">
         <div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
@@ -324,9 +424,9 @@ body { font-family:var(--f); background:var(--bg); color:var(--text); display:fl
     <div class="field-note">Sign up free at pushover.net → install iPhone app → paste keys here.</div>
 
     <div class="info-box">
-      <strong>iPhone:</strong> Host on GitHub Pages → open in Safari → Share → Add to Home Screen. Works offline; syncs via Supabase when connected.
+      <strong>iPhone:</strong> Host on GitHub Pages → open in Safari → Share → Add to Home Screen.
+      Works offline; syncs via Supabase when connected.
     </div>
-
     <button class="save-btn" onclick="saveSettings()">Save & Sync</button>
   </div>
 </div>
@@ -335,34 +435,33 @@ body { font-family:var(--f); background:var(--bg); color:var(--text); display:fl
 
 <script>
 // ════════════════════════════════════════════════════════════
-//  CONSTANTS — Nafis's real data
+//  CONSTANTS
 // ════════════════════════════════════════════════════════════
 
 const VITAMINS = [
-  { id:'iron',   icon:'🩸', name:'Iron',       time:'8 AM',  note:'Empty stomach' },
-  { id:'omega3', icon:'🐟', name:'Omega-3',    time:'1 PM',  note:'With lunch' },
-  { id:'eye',    icon:'👁',  name:'Eye vitamin', time:'1 PM', note:'With food' },
-  { id:'mg',     icon:'🔮', name:'Magnesium',  time:'9 PM',  note:'Evening' },
+  { id:'iron',   icon:'🩸', name:'Iron',        time:'8 AM',  note:'Empty stomach' },
+  { id:'omega3', icon:'🐟', name:'Omega-3',     time:'1 PM',  note:'With lunch' },
+  { id:'eye',    icon:'👁',  name:'Eye vitamin', time:'1 PM',  note:'With food' },
+  { id:'mg',     icon:'🔮', name:'Magnesium',   time:'9 PM',  note:'Evening' },
 ];
 
-// Paper pipeline definitions (stages are fixed; done count synced via Supabase)
 const PAPERS_DEF = [
-  { id:'bbb',     title:'BBB & Hyperglycemia',        type:'Systematic Review',  deadline:'2026-06-08', color:'#ef4565',
+  { id:'bbb',     title:'BBB & Hyperglycemia',          type:'Systematic Review',  deadline:'2026-06-08', color:'#ef4565',
     stages:['Protocol','Search','Dedup','TiAb Screen','Full-text','Extraction','Analysis','Revision','Submit'], done:7,
     note:'Final version ready — revise before end of week 🔥' },
-  { id:'glp1',    title:'GLP-1 & Multiple Sclerosis', type:'Scoping Review',     deadline:'',           color:'#06d6a0',
+  { id:'glp1',    title:'GLP-1 & Multiple Sclerosis',   type:'Scoping Review',     deadline:'',           color:'#06d6a0',
     stages:['Protocol','Search','Dedup','TiAb Screen','Full-text','Extraction','Write','Submit'],             done:2,
     note:'Team finishing deduplication → then TiAb screening' },
-  { id:'sci',     title:'Sex Hormones & SCI/TBI',     type:'Systematic Review',  deadline:'',           color:'#a78bfa',
+  { id:'sci',     title:'Sex Hormones & SCI/TBI',       type:'Systematic Review',  deadline:'',           color:'#a78bfa',
     stages:['Protocol','Search','Dedup','TiAb','Full-text','Extraction','RoB','Analysis','Write','Submit'],  done:3,
     note:'Set team meeting → full-text → edit Kasra\'s file → find PDF download tool' },
-  { id:'fc',      title:'FC in Diabetic Retinopathy', type:'SR + Meta-analysis', deadline:'',           color:'#00c8e0',
+  { id:'fc',      title:'FC in Diabetic Retinopathy',   type:'SR + Meta-analysis', deadline:'',           color:'#00c8e0',
     stages:['Protocol','Search','Screen','Setup','Extraction','RoB','Meta-analysis','Write','Submit'],        done:3,
     note:'Meet Melika + advisor + team → extraction sheet → RoB tool → start' },
-  { id:'candida', title:'Candida Virulence (Mohammad)', type:'Original Research', deadline:'',          color:'#f59e0b',
+  { id:'candida', title:'Candida Virulence (Mohammad)', type:'Original Research',  deadline:'',           color:'#f59e0b',
     stages:['Persian Thesis','Translation','English Draft','Revision','Submit'],                              done:2,
     note:'Claude started edits — continue English editing' },
-  { id:'nigella', title:'Nigella Sativa',              type:'Revision',           deadline:'2026-06-11', color:'#ef4565',
+  { id:'nigella', title:'Nigella Sativa',               type:'Revision',           deadline:'2026-06-11', color:'#ef4565',
     stages:['Draft','Submitted','Peer Review','Revision','Final Submit','Published'],                         done:3,
     note:'Journal revision due JUNE 11 🔥' },
 ];
@@ -380,131 +479,82 @@ const PROJECTS_DEF = [
 ];
 
 const INIT_TASKS = [
-  { id:'t1',  title:'🚿 Take a shower',                         cat:'personal',    date:'2026-06-06' },
-  { id:'t2',  title:'🎒 Pack bag for tomorrow\'s shift',        cat:'personal',    date:'2026-06-06' },
-  { id:'t3',  title:'📄 BBB paper — final revision',           cat:'paper',       date:'2026-06-08', priority:'urgent', proj:'bbb' },
-  { id:'t4',  title:'📄 Nigella Sativa — journal revision',    cat:'paper',       date:'2026-06-11', priority:'urgent', proj:'nigella' },
-  { id:'t5',  title:'🎁 Buy gift for Tina (birthday June 14)', cat:'personal',    date:'2026-06-07', priority:'urgent' },
-  { id:'t6',  title:'🎂 Negin\'s birthday — wish her!',        cat:'personal',    date:'2026-06-11' },
-  { id:'t7',  title:'🎂 Tina\'s birthday — give gift!',        cat:'personal',    date:'2026-06-14' },
-  { id:'t8',  title:'🌙 Night shift',                          cat:'appointment', date:'2026-06-07' },
-  { id:'t9',  title:'🌙 Night shift',                          cat:'appointment', date:'2026-06-10' },
-  { id:'t10', title:'📡 Webinar',                              cat:'appointment', date:'2026-06-13' },
-  { id:'t11', title:'🌙 Night shift',                          cat:'appointment', date:'2026-06-14' },
-  { id:'t12', title:'❤️ Hooman PhD exam 1',                   cat:'personal',    date:'2026-06-17', priority:'high' },
-  { id:'t13', title:'🌙 Night shift',                          cat:'appointment', date:'2026-06-21' },
-  { id:'t14', title:'✨ Laser appointment',                    cat:'appointment', date:'2026-06-25' },
-  { id:'t15', title:'❤️ Hooman PhD exam 2',                   cat:'personal',    date:'2026-06-28', priority:'high' },
-  { id:'t16', title:'📚 Start ML course (IMT) — daily',       cat:'study',       date:'2026-06-21' },
-  { id:'t17', title:'🏛 Start thesis — insurance data → call 200 patients', cat:'work', date:'2026-06-21' },
-  { id:'t18', title:'📞 SCI/TBI — set team meeting + explain full-text screening', cat:'paper', proj:'sci' },
-  { id:'t19', title:'✏️ SCI/TBI — edit Kasra\'s file',         cat:'paper',       proj:'sci' },
-  { id:'t20', title:'🔍 SCI/TBI — find PDF bulk downloader',   cat:'paper',       proj:'sci' },
-  { id:'t21', title:'📞 FC DR — meeting: Melika + advisor + team', cat:'paper',   proj:'fc' },
-  { id:'t22', title:'📋 FC DR — modify extraction sheet + decide RoB tool', cat:'paper', proj:'fc' },
-  { id:'t23', title:'📄 Candida — continue English editing',   cat:'paper',       proj:'candida' },
-  { id:'t24', title:'⏳ GLP-1 & MS — waiting on team dedup → TiAb screening', cat:'paper', proj:'glp1' },
-  { id:'t25', title:'🔓 Mana — remove private auth',           cat:'ai',          proj:'mana' },
-  { id:'t26', title:'📧 Mana — email 5 NIOC colleagues',       cat:'ai',          proj:'mana' },
-  { id:'t27', title:'🐳 HALAJ — docker compose up -d',         cat:'ai',          proj:'halaj' },
-  { id:'t28', title:'💼 Apply to Outlier AI (medicine)',        cat:'work' },
-  { id:'t29', title:'✍️ Enago/Editage — medical writing',      cat:'work' },
-  { id:'t30', title:'🔗 LinkedIn — update headline + bio + projects', cat:'work' },
-  { id:'t31', title:'⌨️ GitHub profile README (NafisSam)',     cat:'work' },
+  { id:'t1',  title:'🚿 Take a shower',                              cat:'personal',    date:'2026-06-06' },
+  { id:'t2',  title:'🎒 Pack bag for tomorrow\'s shift',             cat:'personal',    date:'2026-06-06' },
+  { id:'t3',  title:'📄 BBB paper — final revision',                cat:'paper',       date:'2026-06-08', priority:'urgent', proj:'bbb' },
+  { id:'t4',  title:'📄 Nigella Sativa — journal revision',         cat:'paper',       date:'2026-06-11', priority:'urgent', proj:'nigella' },
+  { id:'t5',  title:'🎁 Buy gift for Tina (birthday June 14)',      cat:'personal',    date:'2026-06-07', priority:'urgent' },
+  { id:'t6',  title:'🎂 Negin\'s birthday — wish her!',             cat:'personal',    date:'2026-06-11' },
+  { id:'t7',  title:'🎂 Tina\'s birthday — give gift!',             cat:'personal',    date:'2026-06-14' },
+  { id:'t8',  title:'🌙 Night shift',                               cat:'appointment', date:'2026-06-07' },
+  { id:'t9',  title:'🌙 Night shift',                               cat:'appointment', date:'2026-06-10' },
+  { id:'t10', title:'📡 Webinar',                                   cat:'appointment', date:'2026-06-13' },
+  { id:'t11', title:'🌙 Night shift',                               cat:'appointment', date:'2026-06-14' },
+  { id:'t12', title:'❤️ Hooman PhD exam 1',                        cat:'personal',    date:'2026-06-17', priority:'high' },
+  { id:'t13', title:'🌙 Night shift',                               cat:'appointment', date:'2026-06-21' },
+  { id:'t14', title:'✨ Laser appointment',                         cat:'appointment', date:'2026-06-25' },
+  { id:'t15', title:'❤️ Hooman PhD exam 2',                        cat:'personal',    date:'2026-06-28', priority:'high' },
+  { id:'t16', title:'📚 Start ML course (IMT) — daily',            cat:'study',       date:'2026-06-21' },
+  { id:'t17', title:'🏛 Start thesis — insurance data → call 200', cat:'work',        date:'2026-06-21' },
+  { id:'t18', title:'📞 SCI/TBI — set team meeting + full-text',   cat:'paper',       proj:'sci' },
+  { id:'t19', title:'✏️ SCI/TBI — edit Kasra\'s file',              cat:'paper',       proj:'sci' },
+  { id:'t20', title:'🔍 SCI/TBI — find PDF bulk downloader',        cat:'paper',       proj:'sci' },
+  { id:'t21', title:'📞 FC DR — meeting: Melika + advisor + team', cat:'paper',       proj:'fc' },
+  { id:'t22', title:'📋 FC DR — extraction sheet + RoB tool',      cat:'paper',       proj:'fc' },
+  { id:'t23', title:'📄 Candida — continue English editing',        cat:'paper',       proj:'candida' },
+  { id:'t24', title:'⏳ GLP-1 & MS — waiting on dedup → TiAb',    cat:'paper',       proj:'glp1' },
+  { id:'t25', title:'🔓 Mana — remove private auth',                cat:'ai',          proj:'mana' },
+  { id:'t26', title:'📧 Mana — email 5 NIOC colleagues',            cat:'ai',          proj:'mana' },
+  { id:'t27', title:'🐳 HALAJ — docker compose up -d',              cat:'ai',          proj:'halaj' },
+  { id:'t28', title:'💼 Apply to Outlier AI (medicine)',             cat:'work' },
+  { id:'t29', title:'✍️ Enago/Editage — medical writing',           cat:'work' },
+  { id:'t30', title:'🔗 LinkedIn — update headline + bio + projects',cat:'work' },
+  { id:'t31', title:'⌨️ GitHub profile README (NafisSam)',          cat:'work' },
 ];
 
 // ════════════════════════════════════════════════════════════
-//  SUPABASE CLIENT — pure fetch, no npm
+//  SUPABASE CLIENT
 // ════════════════════════════════════════════════════════════
 
-/*
-  HOW THIS WORKS (for tutoring):
-  Supabase exposes a REST API at: {project-url}/rest/v1/{table}
-  Every request needs two headers:
-    - apikey: your anon key
-    - Authorization: Bearer {anon key}
-
-  HTTP verbs map to SQL:
-    GET    → SELECT
-    POST   → INSERT / UPSERT (with Prefer: resolution=merge-duplicates)
-    PATCH  → UPDATE
-    DELETE → DELETE
-
-  Query parameters filter rows, e.g.:
-    ?id=eq.abc123   →  WHERE id = 'abc123'
-    ?done=eq.false  →  WHERE done = false
-    ?select=*       →  SELECT *
-*/
-
 const SB = {
-  url: '',
-  key: '',
-  ready: false,
-
+  url: '', key: '', ready: false,
   init(url, key) {
     this.url   = (url || '').replace(/\/$/, '');
     this.key   = key || '';
     this.ready = !!(this.url && this.key);
   },
-
-  // Build headers for every request
   _h(extra = {}) {
-    return {
-      'apikey': this.key,
-      'Authorization': 'Bearer ' + this.key,
-      'Content-Type': 'application/json',
-      ...extra
-    };
+    return { 'apikey':this.key, 'Authorization':'Bearer '+this.key, 'Content-Type':'application/json', ...extra };
   },
-
-  // SELECT * FROM table WHERE {query}
   async get(table, query = '') {
-    const r = await fetch(`${this.url}/rest/v1/${table}?${query}`, {
-      headers: this._h(),
-      cache: 'no-store'   // always fetch fresh — prevents browser caching stale data
-    });
+    const r = await fetch(`${this.url}/rest/v1/${table}?${query}`, { headers:this._h(), cache:'no-store' });
     if (!r.ok) throw new Error(await r.text());
     return r.json();
   },
-
-  // INSERT or UPDATE (merge on primary key conflict)
   async upsert(table, data) {
     const rows = Array.isArray(data) ? data : [data];
     const r = await fetch(`${this.url}/rest/v1/${table}`, {
-      method: 'POST',
-      headers: this._h({ 'Prefer': 'resolution=merge-duplicates,return=minimal' }),
-      body: JSON.stringify(rows)
+      method:'POST',
+      headers:this._h({ 'Prefer':'resolution=merge-duplicates,return=minimal' }),
+      body:JSON.stringify(rows)
     });
     if (!r.ok) throw new Error(await r.text());
   },
-
-  // DELETE FROM table WHERE id = {id}
   async del(table, id) {
     const r = await fetch(`${this.url}/rest/v1/${table}?id=eq.${encodeURIComponent(id)}`, {
-      method: 'DELETE',
-      headers: this._h()
-    });
-    if (!r.ok) throw new Error(await r.text());
-  },
-
-  // DELETE with custom filter
-  async delWhere(table, filter) {
-    const r = await fetch(`${this.url}/rest/v1/${table}?${filter}`, {
-      method: 'DELETE',
-      headers: this._h()
+      method:'DELETE', headers:this._h()
     });
     if (!r.ok) throw new Error(await r.text());
   }
 };
 
-// Sync status UI
 function setSyncDot(status, msg = '') {
-  ['syncDot', 'settingsSyncDot'].forEach(id => {
+  ['syncDot','settingsSyncDot'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) { el.className = 'sync-dot ' + status; el.title = msg || status; }
+    if (el) { el.className = 'sync-dot ' + status; el.title = msg; }
   });
   const sm = document.getElementById('settingsSyncMsg');
-  if (sm) sm.textContent = msg || { '': 'Synced ✓', syncing: 'Syncing…', error: 'Sync error', offline: 'Offline / not configured' }[status] || status;
+  if (sm) sm.textContent = msg || {'':'Synced ✓',syncing:'Syncing…',error:'Sync error',offline:'Not configured'}[status] || status;
 }
 
 // ════════════════════════════════════════════════════════════
@@ -514,6 +564,7 @@ function setSyncDot(status, msg = '') {
 let tasks    = [];
 let papers   = [];
 let projects = [];
+let alarms   = [];
 let settings = {};
 let chatHistory = [];
 let recognition = null;
@@ -527,53 +578,48 @@ async function init() {
   settings = JSON.parse(localStorage.getItem('nos_settings') || '{}');
   SB.init(settings.sbUrl, settings.sbKey);
 
-  // Load pipeline from localStorage first (instant), then override from Supabase
   papers   = JSON.parse(JSON.stringify(PAPERS_DEF));
   projects = JSON.parse(JSON.stringify(PROJECTS_DEF));
   loadPipelineFromLocal();
 
-  // Load tasks
   if (SB.ready) {
-    setSyncDot('syncing', 'Loading from Supabase…');
+    setSyncDot('syncing', 'Loading…');
     try {
       const [sbTasks, sbPipe] = await Promise.all([
         SB.get('tasks', 'select=*&order=created_at.desc'),
         SB.get('pipeline', 'select=*')
       ]);
-
-      // If Supabase has tasks, use them; else seed it with INIT_TASKS
       if (sbTasks.length > 0) {
         tasks = sbTasks;
         localStorage.setItem('nos_tasks', JSON.stringify(tasks));
       } else {
         tasks = defaultTasks();
-        await SB.upsert('tasks', tasks); // push defaults to Supabase on first run
+        await SB.upsert('tasks', tasks);
       }
-
-      // Apply pipeline stage progress from Supabase
       sbPipe.forEach(row => {
         const p = [...papers, ...projects].find(x => x.id === row.id);
         if (p) p.done = row.done_stages;
       });
-
       setSyncDot('', 'Synced ✓');
     } catch(e) {
       console.warn('Supabase load failed:', e.message);
-      setSyncDot('error', 'Sync error — using local data');
+      setSyncDot('error', 'Using local data');
       tasks = localTasks();
     }
   } else {
-    setSyncDot('offline', 'Add Supabase keys in Settings to sync');
+    setSyncDot('offline', 'Add Supabase keys to sync');
     tasks = localTasks();
   }
 
+  loadAlarms();
+  loadChatHistory();
   setGreeting();
   checkVitaminReset();
   checkBanners();
   renderToday();
+  renderAlarms();
   renderPipeline();
   renderStats();
-  loadChatHistory();
 }
 
 function defaultTasks() {
@@ -593,12 +639,10 @@ function loadPipelineFromLocal() {
 }
 
 // ════════════════════════════════════════════════════════════
-//  SYNC HELPERS — write to both localStorage AND Supabase
+//  SYNC HELPERS
 // ════════════════════════════════════════════════════════════
 
-function saveTasksLocal() {
-  localStorage.setItem('nos_tasks', JSON.stringify(tasks));
-}
+function saveTasksLocal() { localStorage.setItem('nos_tasks', JSON.stringify(tasks)); }
 
 async function syncTask(task) {
   saveTasksLocal();
@@ -606,43 +650,37 @@ async function syncTask(task) {
   setSyncDot('syncing', 'Syncing…');
   try {
     await SB.upsert('tasks', {
-      id: task.id, title: task.title, cat: task.cat,
-      date: task.date || '', priority: task.priority || 'normal',
-      proj: task.proj || '', done: task.done,
-      done_at: task.done_at || null, created_at: task.created_at || today()
+      id:task.id, title:task.title, cat:task.cat,
+      date:task.date||'', priority:task.priority||'normal',
+      proj:task.proj||'', done:task.done,
+      done_at:task.done_at||null, created_at:task.created_at||today()
     });
     setSyncDot('', 'Synced ✓');
-  } catch(e) { setSyncDot('error', 'Sync error: ' + e.message); }
+  } catch(e) { setSyncDot('error', e.message); }
 }
 
 async function syncDeleteTask(id) {
   saveTasksLocal();
   if (!SB.ready) return;
-  try { await SB.del('tasks', id); } catch(e) { console.warn('Delete sync failed:', e.message); }
+  try { await SB.del('tasks', id); } catch(e) {}
 }
 
 async function syncPipelineItem(p) {
-  // Save all pipeline to localStorage
-  const pipeData = [...papers, ...projects].map(x => ({ id:x.id, done_stages:x.done }));
-  localStorage.setItem('nos_pipeline', JSON.stringify(pipeData));
+  const pd = [...papers,...projects].map(x => ({ id:x.id, done_stages:x.done }));
+  localStorage.setItem('nos_pipeline', JSON.stringify(pd));
   if (!SB.ready) return;
   try {
-    await SB.upsert('pipeline', { id:p.id, done_stages:p.done, note:p.note, dtype: PAPERS_DEF.find(x=>x.id===p.id) ? 'paper' : 'project' });
-  } catch(e) { console.warn('Pipeline sync failed:', e.message); }
+    await SB.upsert('pipeline', {
+      id:p.id, done_stages:p.done, note:p.note,
+      dtype:PAPERS_DEF.find(x=>x.id===p.id)?'paper':'project'
+    });
+  } catch(e) {}
 }
 
 async function syncVitamin(log) {
   localStorage.setItem('nos_vitamins', JSON.stringify(log));
   if (!SB.ready) return;
-  try { await SB.upsert('vitamins', { date: today(), log }); } catch(e) {}
-}
-
-async function syncAgenda(content) {
-  const agendas = JSON.parse(localStorage.getItem('nos_agendas') || '{}');
-  agendas[today()] = content;
-  localStorage.setItem('nos_agendas', JSON.stringify(agendas));
-  if (!SB.ready) return;
-  try { await SB.upsert('agendas', { date: today(), content }); } catch(e) {}
+  try { await SB.upsert('vitamins', { date:today(), log }); } catch(e) {}
 }
 
 // ════════════════════════════════════════════════════════════
@@ -653,7 +691,8 @@ function setGreeting() {
   const h = new Date().getHours();
   const g = h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : h < 22 ? 'Good evening' : 'Still awake?';
   document.getElementById('greeting').textContent = g + ', Nafis ✦';
-  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US',
+    { weekday:'long', month:'long', day:'numeric', year:'numeric' });
 }
 
 // ════════════════════════════════════════════════════════════
@@ -662,29 +701,22 @@ function setGreeting() {
 
 function checkBanners() {
   const t = today();
-
-  // Night shift today?
-  if (tasks.find(x => x.cat === 'appointment' && x.date === t && x.title.includes('Night shift'))) {
+  if (tasks.find(x => x.cat==='appointment' && x.date===t && x.title.includes('Night shift')))
     show('shiftBanner', '🌙 Night shift today. Pack your bag, eat before you go.');
-  }
 
-  // Urgent deadlines in ≤3 days
-  const urgent = tasks.filter(x => !x.done && x.priority === 'urgent' && x.date && daysUntil(x.date) >= 0 && daysUntil(x.date) <= 3);
-  if (urgent.length) {
-    show('deadlineBanner', '🔥 ' + urgent.map(x => `<strong>${x.title}</strong> — ${daysUntil(x.date) === 0 ? 'TODAY' : 'in ' + daysUntil(x.date) + 'd'}`).join('&nbsp;·&nbsp;'));
-  }
+  const urgent = tasks.filter(x => !x.done && x.priority==='urgent' && x.date && daysUntil(x.date)>=0 && daysUntil(x.date)<=3);
+  if (urgent.length)
+    show('deadlineBanner', '🔥 '+urgent.map(x=>`<strong>${x.title}</strong> — ${daysUntil(x.date)===0?'TODAY':'in '+daysUntil(x.date)+'d'}`).join(' &nbsp;·&nbsp; '));
 
-  // Birthdays in ≤3 days
-  const bdays = tasks.filter(x => !x.done && x.title.toLowerCase().includes('birthday') && x.date && daysUntil(x.date) >= 0 && daysUntil(x.date) <= 3);
-  if (bdays.length) {
-    show('birthdayBanner', '🎂 ' + bdays.map(x => `<strong>${x.title}</strong> — ${daysUntil(x.date) === 0 ? 'today!' : 'in ' + daysUntil(x.date) + 'd'}`).join(' &nbsp; '));
-  }
+  const bdays = tasks.filter(x => !x.done && x.title.toLowerCase().includes('birthday') && x.date && daysUntil(x.date)>=0 && daysUntil(x.date)<=3);
+  if (bdays.length)
+    show('birthdayBanner', '🎂 '+bdays.map(x=>`<strong>${x.title}</strong> — ${daysUntil(x.date)===0?'today!':'in '+daysUntil(x.date)+'d'}`).join(' &nbsp; '));
 
-  // Monthly birthday prompt (1st of month, once per month)
   const lastCheck = localStorage.getItem('nos_monthly_check');
-  const thisMonth = t.slice(0, 7);
-  if (new Date().getDate() === 1 && lastCheck !== thisMonth) {
-    const nextM = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toLocaleDateString('en-US', { month:'long' });
+  const thisMonth = t.slice(0,7);
+  if (new Date().getDate()===1 && lastCheck!==thisMonth) {
+    const nextM = new Date(new Date().getFullYear(), new Date().getMonth()+1, 1)
+      .toLocaleDateString('en-US',{month:'long'});
     const b = document.getElementById('monthlyBanner');
     b.innerHTML = `📅 New month! Important birthdays or events in <strong>${nextM}</strong>?
       <div class="banner-reply">
@@ -696,25 +728,13 @@ function checkBanners() {
   }
 }
 
-function show(id, html) {
-  const el = document.getElementById(id);
-  el.innerHTML = html;
-  el.classList.add('show');
-}
-
+function show(id, html) { const el=document.getElementById(id); el.innerHTML=html; el.classList.add('show'); }
 function handleMonthly(month) {
   const v = document.getElementById('monthlyIn')?.value?.trim();
-  if (v) {
-    document.getElementById('chatInput').value = 'Please add these upcoming events to my tasks: ' + v;
-    showPanel('talk', document.querySelectorAll('.tab')[1]);
-    sendChat();
-  }
+  if (v) { document.getElementById('chatInput').value='Please add these upcoming events: '+v; showPanel('talk',document.querySelectorAll('.tab')[1]); sendChat(); }
   dismissMonthly(month);
 }
-function dismissMonthly(month) {
-  localStorage.setItem('nos_monthly_check', month);
-  document.getElementById('monthlyBanner').classList.remove('show');
-}
+function dismissMonthly(month) { localStorage.setItem('nos_monthly_check',month); document.getElementById('monthlyBanner').classList.remove('show'); }
 
 // ════════════════════════════════════════════════════════════
 //  VITAMINS
@@ -726,524 +746,206 @@ function checkVitaminReset() {
     localStorage.setItem('nos_vitamins', JSON.stringify({}));
   }
 }
-
-function getVitLog() { return JSON.parse(localStorage.getItem('nos_vitamins') || '{}'); }
-
+function getVitLog() { return JSON.parse(localStorage.getItem('nos_vitamins')||'{}'); }
 function toggleVitamin(id) {
   const log = getVitLog();
   log[id] = !log[id];
   syncVitamin(log);
   renderVitamins();
-  const v = VITAMINS.find(x => x.id === id);
+  const v = VITAMINS.find(x=>x.id===id);
   toast(log[id] ? `✓ ${v.name} taken` : `${v.name} unchecked`);
 }
-
 function renderVitamins() {
   const log = getVitLog();
   document.getElementById('vitGrid').innerHTML = VITAMINS.map(v => `
-    <div class="vit-card${log[v.id] ? ' done' : ''}" onclick="toggleVitamin('${v.id}')">
-      <div class="vit-icon">${log[v.id] ? '✅' : v.icon}</div>
+    <div class="vit-card${log[v.id]?' done':''}" onclick="toggleVitamin('${v.id}')">
+      <div class="vit-icon">${log[v.id]?'✅':v.icon}</div>
       <div class="vit-name">${v.name}</div>
       <div class="vit-time">${v.time} · ${v.note}</div>
     </div>`).join('');
 }
 
 // ════════════════════════════════════════════════════════════
-//  TASKS — add / toggle / delete / render
-// ════════════════════════════════════════════════════════════
-
-function addTask(fields) {
-  const task = { id: 'u' + Date.now(), done:false, done_at:null, created_at:today(), priority:'normal', proj:'', date:'', cat:'personal', ...fields };
-  tasks.unshift(task);
-  syncTask(task);
-  renderToday();
-  toast('Task added ✓');
-}
-
-function toggleTask(id) {
-  const t = tasks.find(x => x.id === id);
-  if (!t) return;
-  t.done    = !t.done;
-  t.done_at = t.done ? today() : null;
-  syncTask(t);
-  renderToday();
-  renderStats();
-  if (t.done && t.proj) suggestNext(t.proj);
-}
-
-function delTask(id) {
-  tasks = tasks.filter(x => x.id !== id);
-  syncDeleteTask(id);
-  renderToday();
-}
-
-function quickAdd() {
-  const v = document.getElementById('quickInput').value.trim();
-  if (!v) return;
-  addTask({ title:v, cat:'personal', date:today() });
-  document.getElementById('quickInput').value = '';
-}
-
-function suggestNext(projId) {
-  const p = [...papers, ...projects].find(x => x.id === projId);
-  if (p && p.stages[p.done + 1]) setTimeout(() => toast(`Next for ${p.title}: "${p.stages[p.done + 1]}"`), 500);
-}
-
-// ─── RENDER TODAY ───────────────────────────────────────────
-
-function renderToday() {
-  renderVitamins();
-  const t = today(), next7 = addDays(t, 7);
-  const todayT    = tasks.filter(x => x.date === t);
-  const upcoming  = tasks.filter(x => x.date && x.date > t && x.date <= next7 && !x.done);
-  const nodate    = tasks.filter(x => !x.date && !x.done);
-
-  document.getElementById('todayCnt').textContent = '(' + todayT.filter(x => !x.done).length + ' left)';
-  document.getElementById('todayList').innerHTML    = todayT.length   ? todayT.map(taskCard).join('')   : '<div class="empty"><span class="e">🌿</span>Nothing today.</div>';
-  document.getElementById('upcomingList').innerHTML = upcoming.length  ? upcoming.map(taskCard).join('') : '<div class="empty" style="padding:10px 14px;font-size:12px;color:var(--muted)">Nothing in the next 7 days.</div>';
-  document.getElementById('nodateList').innerHTML   = nodate.length    ? nodate.map(taskCard).join('')   : '<div class="empty" style="padding:10px 14px;font-size:12px;color:var(--muted)">All caught up ✓</div>';
-}
-
-function taskCard(x) {
-  const du = x.date ? daysUntil(x.date) : null;
-  const overdue  = du !== null && du < 0 && !x.done;
-  const catLabel = { paper:'🔬 Paper', ai:'🤖 AI', health:'💊 Health', study:'📖 Study', work:'💼 Work', appointment:'📅 Appt', personal:'✦' }[x.cat] || x.cat;
-  const dateChip = x.date ? `<span class="chip chip-date${overdue||x.priority==='urgent'?' chip-urgent':''}">${du===0?'📅 today':overdue?'⚠ '+Math.abs(du)+'d ago':du===1?'⏰ tomorrow':fmt(x.date)}</span>` : '';
-  const prioChip = x.priority === 'urgent' ? '<span class="chip chip-urgent">🔥</span>' : x.priority === 'high' ? '<span class="chip" style="background:rgba(255,202,58,.1);color:var(--warn)">⚠</span>' : '';
-  const projChip = x.proj ? `<span class="chip" style="background:var(--s2);color:var(--muted)">${x.proj.toUpperCase()}</span>` : '';
-  return `
-    <div class="card card-row${x.done ? ' task-done' : ''}">
-      <div class="cb${x.done ? ' on' : ''}" onclick="toggleTask('${x.id}')"></div>
-      <div class="task-body">
-        <div class="task-title">${esc(x.title)}</div>
-        <div class="task-meta"><span class="chip chip-${x.cat}">${catLabel}</span>${prioChip}${dateChip}${projChip}</div>
-      </div>
-      <button class="del-btn" onclick="delTask('${x.id}')">✕</button>
-    </div>`;
-}
-
-// ════════════════════════════════════════════════════════════
-//  PIPELINE — papers + projects
-// ════════════════════════════════════════════════════════════
-
-function renderPipeline() {
-  document.getElementById('paperPipe').innerHTML = papers.map(pipeCard).join('');
-  document.getElementById('projPipe').innerHTML  = projects.map(pipeCard).join('');
-}
-
-function pipeCard(p) {
-  const pct = Math.round(p.done / (p.stages.length - 1) * 100);
-  const dlChip = p.deadline ? `<span class="dl-chip">Due ${fmt(p.deadline)} (${daysUntil(p.deadline) >= 0 ? daysUntil(p.deadline) + 'd' : 'overdue'})</span>` : '';
-  const stagesHtml = p.stages.map((s, i) =>
-    `<span class="stage${i < p.done ? ' s-done' : i === p.done ? ' s-current' : ''}">${i < p.done ? '✓' : i === p.done ? '◉' : '○'} ${s}</span>`
-  ).join('');
-  return `
-    <div class="pipe-card">
-      <div class="pipe-header">
-        <div>
-          <div class="pipe-title" style="color:${p.color||'var(--cyan)'}">${p.title}</div>
-          <div class="pipe-sub">${p.type || p.sub || ''}</div>
-        </div>${dlChip}
-      </div>
-      <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${p.color||'var(--cyan)'}"></div></div>
-      <div class="stages">${stagesHtml}</div>
-      <div class="pipe-note">${esc(p.note)}</div>
-      <button class="adv-btn" onclick="advanceStage('${p.id}')">Advance → ${p.stages[Math.min(p.done+1,p.stages.length-1)]}</button>
-    </div>`;
-}
-
-function advanceStage(id) {
-  const p = [...papers, ...projects].find(x => x.id === id);
-  if (!p || p.done >= p.stages.length - 1) { toast('Already at final stage'); return; }
-  p.done++;
-  syncPipelineItem(p);
-  renderPipeline();
-  toast('Advanced: ' + p.stages[p.done]);
-}
-
-// ════════════════════════════════════════════════════════════
-//  REPORT STATS
-// ════════════════════════════════════════════════════════════
-
-function renderStats() {
-  const done7 = tasks.filter(x => x.done && x.done_at >= addDays(today(), -7)).length;
-  const open   = tasks.filter(x => !x.done).length;
-  const vits   = Object.values(getVitLog()).filter(Boolean).length;
-  document.getElementById('statGrid').innerHTML = `
-    <div class="stat-box"><div class="stat-num" style="color:var(--ok)">${done7}</div><div class="stat-lbl">Done this week</div></div>
-    <div class="stat-box"><div class="stat-num" style="color:var(--warn)">${open}</div><div class="stat-lbl">Open tasks</div></div>
-    <div class="stat-box"><div class="stat-num" style="color:var(--purple)">${vits}/4</div><div class="stat-lbl">Vitamins today</div></div>`;
-}
-
-// ════════════════════════════════════════════════════════════
-//  AI CHAT
+//  ALARMS
 // ════════════════════════════════════════════════════════════
 
 /*
-  HOW THE CHAT WORKS (for tutoring):
-  1. User types/speaks → appended to chatHistory array
-  2. chatHistory (last 10 turns) + system prompt → sent to OpenAI API
-  3. Response comes back as text
-  4. parseActions() scans the text for JSON blocks like {"ACTION":"add_task",...}
-  5. Those blocks are stripped from visible text, executed silently
-  6. Clean text shown to user; action badges confirm what was done
+  ALARM OBJECT: { id, time:"HH:MM", label, repeat:"daily|once|weekdays|weekends", active:true, lastFired:"YYYY-MM-DD" }
+
+  HOW IT WORKS:
+  - Alarms stored in localStorage (nos_alarms)
+  - checkAndNotify() runs every 30 min; if alarm time has passed (within 30-min window)
+    and hasn't fired today → sends Pushover notification
+  - "once" alarms deactivate after firing
+  - Repeat types filter by day-of-week before firing
 */
 
-const AI_SYSTEM = `You are Nafis's personal AI assistant embedded in her life OS app.
+function loadAlarms()  { alarms = JSON.parse(localStorage.getItem('nos_alarms')||'[]'); }
+function saveAlarms()  { localStorage.setItem('nos_alarms', JSON.stringify(alarms)); }
 
-WHO SHE IS: Nafiseh Sami, final-year MD in Tehran, ortho intern → IM next. Building clinical AI (Mana, HALAJ). Wife of Hooman (PhD student). Works past 1 AM.
-
-PAPERS — needs weekly progress on each:
-1. BBB & Hyperglycemia — revision DUE JUNE 8 🔥
-2. GLP-1 & MS — waiting on team dedup → TiAb screening next
-3. SCI/TBI Sex Hormones — team meeting needed, full-text screening, edit Kasra's file
-4. FC in Diabetic Retinopathy — meet Melika+advisor+team, start extraction
-5. Candida Virulence (Mohammad's) — English editing
-6. Nigella Sativa — revision DUE JUNE 11 🔥
-
-AI PROJECTS: Mana (open to first 5 users next), HALAJ (docker setup), OSCE Tutor (parked)
-
-KEY DATES: June 7 night shift + Tina gift, June 11 Nigella+Negin bday, June 13 webinar, June 14 night shift+Tina bday, June 17 Hooman exam ❤️, June 21 night shift+ML starts+thesis starts, June 25 laser, June 28 Hooman exam 2 ❤️
-
-HEALTH: Iron 8AM, Omega-3+Eye vitamin 1PM, Mg 9PM. Exercise alt-day. Period ~July 3.
-
-JOB: Apply Outlier AI + Enago/Editage. Update LinkedIn + GitHub README.
-
-STYLE: Direct, short, warm. No fluff. Act, don't explain.
-
-ACTIONS — include these JSON blocks when relevant (app will execute them):
-Add task:     {"ACTION":"add_task","title":"...","cat":"paper|ai|study|health|personal|appointment|work","date":"YYYY-MM-DD or empty","priority":"normal|high|urgent","proj":"bbb|glp1|sci|fc|candida|nigella|mana|halaj or empty"}
-Advance stage:{"ACTION":"advance","id":"bbb|glp1|sci|fc|candida|nigella|mana|halaj"}
-
-Include multiple ACTION lines if needed. The user won't see the JSON — just the badges confirming the action.`;
-
-async function sendChat() {
-  const input = document.getElementById('chatInput');
-  const msg   = input.value.trim();
-  if (!msg) return;
-
-  const key = settings.openaiKey;
-  if (!key) {
-    appendMsg('ai', 'Add your OpenAI key in Settings ⚙ — I need it to work.');
-    input.value = '';
-    return;
-  }
-
-  appendMsg('user', msg);
-  chatHistory.push({ role:'user', content:msg });
-  input.value = '';
-  input.style.height = 'auto';
-  showTyping(true);
-
-  try {
-    // Only send last 10 turns to keep tokens low
-    const reply = await callOpenAI(chatHistory.slice(-10));
-    chatHistory.push({ role:'assistant', content:reply });
-    showTyping(false);
-    const { clean, actions } = parseActions(reply);
-    appendMsg('ai', clean, actions);
-    actions.forEach(executeAction);
-    saveChatHistory();
-  } catch(e) {
-    showTyping(false);
-    appendMsg('ai', 'Error: ' + e.message);
-  }
+function addAlarm() {
+  const time   = document.getElementById('alarmTime').value;
+  const label  = document.getElementById('alarmLabel').value.trim();
+  const repeat = document.getElementById('alarmRepeat').value;
+  if (!time || !label) { toast('Add a time and label', 'warn'); return; }
+  alarms.push({ id:'a'+Date.now(), time, label, repeat, active:true, lastFired:'' });
+  saveAlarms();
+  renderAlarms();
+  document.getElementById('alarmLabel').value = '';
+  toast('Alarm set ✓');
 }
 
-// Parse {"ACTION":...} blocks out of AI text
-function parseActions(text) {
-  const actions = [];
-  const clean = text.replace(/\{"ACTION":"[^"]+[^}]*\}/g, m => {
-    try { actions.push(JSON.parse(m)); } catch(e) {}
-    return '';
-  }).trim();
-  return { clean, actions };
+function deleteAlarm(id) {
+  alarms = alarms.filter(a => a.id !== id);
+  saveAlarms(); renderAlarms();
 }
 
-function executeAction(a) {
-  if (a.ACTION === 'add_task') addTask({ title:a.title, cat:a.cat||'personal', date:a.date||'', priority:a.priority||'normal', proj:a.proj||'' });
-  if (a.ACTION === 'advance')  advanceStage(a.id);
+function toggleAlarmActive(id) {
+  const a = alarms.find(x => x.id === id);
+  if (a) { a.active = !a.active; saveAlarms(); renderAlarms(); }
 }
 
-async function callOpenAI(messages) {
-  const r = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: { 'Content-Type':'application/json', 'Authorization':'Bearer ' + settings.openaiKey },
-    body: JSON.stringify({
-      model: settings.model || 'gpt-4o-mini',
-      max_tokens: 400,
-      messages: [{ role:'system', content: AI_SYSTEM }, ...messages]
-    })
-  });
-  if (!r.ok) { const e = await r.json(); throw new Error(e.error?.message || r.statusText); }
-  const d = await r.json();
-  return d.choices[0].message.content;
+function fmtAlarmTime(t) {
+  const [h, m] = t.split(':').map(Number);
+  return (h%12||12) + ':' + String(m).padStart(2,'0') + ' ' + (h>=12?'PM':'AM');
 }
 
-function appendMsg(role, text, actions = []) {
-  const div = document.createElement('div');
-  div.className = 'msg ' + role;
-  const badges = actions.map(a =>
-    `<span class="action-badge">${a.ACTION === 'add_task' ? '✓ Added: ' + a.title : a.ACTION === 'advance' ? '↑ Advanced: ' + a.id : a.ACTION}</span>`
-  ).join(' ');
-  div.innerHTML = `<div class="bubble">${mdToHtml(text)}${badges ? '<br>' + badges : ''}</div>`;
-  document.getElementById('chatMsgs').appendChild(div);
-  document.getElementById('chatMsgs').scrollTop = 9999;
-}
+const repeatLabel = { once:'One time', daily:'Every day', weekdays:'Mon–Fri', weekends:'Sat–Sun' };
 
-function showTyping(on) {
-  document.getElementById('typingRow').style.display = on ? 'block' : 'none';
-  if (on) document.getElementById('chatMsgs').scrollTop = 9999;
-}
-
-function saveChatHistory()  { localStorage.setItem('nos_chat', JSON.stringify(chatHistory.slice(-30))); }
-function loadChatHistory()  { const h = localStorage.getItem('nos_chat'); if (h) chatHistory = JSON.parse(h); }
-
-// ════════════════════════════════════════════════════════════
-//  WEEKLY REPORT
-// ════════════════════════════════════════════════════════════
-
-async function generateReport() {
-  if (!settings.openaiKey) { toast('Need OpenAI key in Settings', 'warn'); return; }
-  document.getElementById('reportBox').textContent = 'Generating…';
-  const done7 = tasks.filter(x => x.done && x.done_at >= addDays(today(), -7));
-  const prompt = `Generate Nafis's weekly review. Honest, warm, direct.
-
-DONE (${done7.length}): ${done7.map(x => x.title).join('; ') || 'none recorded'}
-OPEN: ${tasks.filter(x => !x.done).slice(0,12).map(x => x.title).join('; ')}
-PAPERS: ${papers.map(p => p.title + ': stage ' + (p.done+1) + '/' + p.stages.length).join('; ')}
-PROJECTS: ${projects.map(p => p.title + ': stage ' + (p.done+1) + '/' + p.stages.length).join('; ')}
-
-Write: (1) what got done, (2) what's stuck, (3) one focus for next week, (4) one genuine observation. Under 220 words.`;
-
-  try {
-    const r = await callOpenAI([{ role:'user', content:prompt }]);
-    document.getElementById('reportBox').textContent = r;
-  } catch(e) {
-    document.getElementById('reportBox').textContent = 'Error: ' + e.message;
-  }
+function renderAlarms() {
+  const list = document.getElementById('alarmList');
+  if (!alarms.length) { list.innerHTML = '<div class="empty" style="padding:8px 14px;font-size:12px;color:var(--muted)">No alarms set.</div>'; return; }
+  list.innerHTML = alarms.map(a => `
+    <div class="alarm-item${a.active?'':' off'}">
+      <div class="a-${a.id}-t alarm-t">${fmtAlarmTime(a.time)}</div>
+      <div class="alarm-body">
+        <div class="alarm-name">${esc(a.label)}</div>
+        <div class="alarm-rep">${repeatLabel[a.repeat]||a.repeat}</div>
+      </div>
+      <div class="a-toggle${a.active?' on':''}" onclick="toggleAlarmActive('${a.id}')"></div>
+      <button class="alarm-del" onclick="deleteAlarm('${a.id}')">✕</button>
+    </div>`).join('');
 }
 
 // ════════════════════════════════════════════════════════════
-//  VOICE INPUT
+//  PUSHOVER — send notifications to iPhone
 // ════════════════════════════════════════════════════════════
 
 /*
-  HOW VOICE WORKS (for tutoring):
-  - Web Speech API is built into Chrome/Safari — free, no API call
-  - SpeechRecognition object listens to mic, fires 'onresult' events
-  - We append final transcripts to the input field
-  - 'continuous: true' keeps listening until you stop it
-  - Works in English; for Persian, change lang to 'fa-IR'
+  HOW THIS WORKS:
+  Pushover's API accepts form-encoded POST requests.
+  We use mode:'no-cors' so the browser sends the request without blocking on CORS headers.
+  We can't read the response, but Pushover receives it and pushes to the iPhone app.
+  This is "fire and forget" — works as long as the app is open.
+
+  priority: -1 = quiet (no sound), 0 = normal, 1 = high priority
 */
 
-function toggleVoice(target) {
-  if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-    toast('Voice not supported — use Chrome or Safari', 'warn'); return;
-  }
-  const btn   = document.getElementById(target === 'quick' ? 'quickMic' : 'chatMic');
-  const field = document.getElementById(target === 'quick' ? 'quickInput' : 'chatInput');
-
-  if (listeningTarget === target) {
-    // Stop
-    recognition?.stop();
-    listeningTarget = null;
-    btn.classList.remove('on');
-    btn.textContent = '🎤';
-    return;
-  }
-
-  // Stop any existing
-  recognition?.stop();
-
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  recognition = new SR();
-  recognition.continuous     = true;
-  recognition.interimResults = true;
-  recognition.lang           = 'en-US'; // change to 'fa-IR' for Persian
-
-  listeningTarget = target;
-  btn.classList.add('on');
-  btn.textContent = '⏹';
-
-  let baseText = field.value;
-  recognition.onresult = e => {
-    let final = '', interim = '';
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      if (e.results[i].isFinal) final += e.results[i][0].transcript;
-      else interim += e.results[i][0].transcript;
-    }
-    if (final) baseText += final;
-    field.value = baseText + interim;
-    if (target === 'chat') autoResize(field);
-  };
-
-  recognition.onerror = () => {
-    listeningTarget = null; btn.classList.remove('on'); btn.textContent = '🎤';
-  };
-  recognition.onend = () => {
-    if (listeningTarget === target) recognition.start(); // keep listening
-  };
-  recognition.start();
-}
-
-// ════════════════════════════════════════════════════════════
-//  SETTINGS
-// ════════════════════════════════════════════════════════════
-
-function openSettings() {
-  document.getElementById('sbUrl').value    = settings.sbUrl    || '';
-  document.getElementById('sbKey').value    = settings.sbKey    || '';
-  document.getElementById('apiKey').value   = settings.openaiKey|| '';
-  document.getElementById('aiModel').value  = settings.model    || 'gpt-4o-mini';
-  document.getElementById('puUser').value   = settings.puUser   || '';
-  document.getElementById('puToken').value  = settings.puToken  || '';
-  document.getElementById('drawerOverlay').classList.add('show');
-
-  // Show current sync state in settings
-  setSyncDot(SB.ready ? '' : 'offline', SB.ready ? 'Connected ✓' : 'Not configured');
-}
-
-function closeSettings() {
-  document.getElementById('drawerOverlay').classList.remove('show');
-}
-
-// Force pull latest data from Supabase — use the ↻ button when you expect changes from another device
-async function forceSync() {
-  if (!SB.ready) { toast('No Supabase connection — add keys in ⚙', 'warn'); return; }
-  const btn = document.getElementById('refreshBtn');
-  btn.style.animation = 'spin .6s linear infinite';
-  setSyncDot('syncing', 'Fetching latest…');
+async function pushNotify(message, title = 'Nafis OS', priority = 0) {
+  if (!settings.puUser || !settings.puToken) return;
   try {
-    const [sbTasks, sbPipe] = await Promise.all([
-      SB.get('tasks', 'select=*&order=created_at.desc'),
-      SB.get('pipeline', 'select=*')
-    ]);
-    if (sbTasks.length) {
-      tasks = sbTasks;
-      localStorage.setItem('nos_tasks', JSON.stringify(tasks));
-    }
-    sbPipe.forEach(row => {
-      const p = [...papers, ...projects].find(x => x.id === row.id);
-      if (p) p.done = row.done_stages;
+    fetch('https://api.pushover.net/1/messages.json', {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        token:    settings.puToken,
+        user:     settings.puUser,
+        title:    title,
+        message:  message,
+        priority: priority
+      })
     });
-    setSyncDot('', 'Synced ✓');
-    renderToday();
-    renderPipeline();
-    renderStats();
-    toast('Refreshed ✓');
-  } catch(e) {
-    setSyncDot('error', 'Refresh failed: ' + e.message);
-    toast('Refresh failed: ' + e.message, 'warn');
-  } finally {
-    btn.style.animation = '';
-  }
+  } catch(e) { /* silent */ }
 }
 
-async function saveSettings() {
-  settings.sbUrl     = document.getElementById('sbUrl').value.trim();
-  settings.sbKey     = document.getElementById('sbKey').value.trim();
-  settings.openaiKey = document.getElementById('apiKey').value.trim();
-  settings.model     = document.getElementById('aiModel').value;
-  settings.puUser    = document.getElementById('puUser').value.trim();
-  settings.puToken   = document.getElementById('puToken').value.trim();
-  localStorage.setItem('nos_settings', JSON.stringify(settings));
+// ─── NOTIFICATION DEDUP ────────────────────────────────────
+// Stores sent keys per day so we never double-fire.
+// Format: { "2026-06-07": ["morning","iron","alarm_a12345"] }
 
-  SB.init(settings.sbUrl, settings.sbKey);
+function notifiedToday(key) {
+  const log = JSON.parse(localStorage.getItem('nos_notified')||'{}');
+  return (log[today()]||[]).includes(key);
+}
+function markNotified(key) {
+  const log = JSON.parse(localStorage.getItem('nos_notified')||'{}');
+  if (!log[today()]) log[today()] = [];
+  if (!log[today()].includes(key)) log[today()].push(key);
+  // Prune entries older than 7 days
+  Object.keys(log).filter(d => d < addDays(today(),-7)).forEach(d => delete log[d]);
+  localStorage.setItem('nos_notified', JSON.stringify(log));
+}
 
-  // If Supabase just got configured, push all local tasks up
-  if (SB.ready) {
-    setSyncDot('syncing', 'Pushing local data to Supabase…');
-    try {
-      if (tasks.length) await SB.upsert('tasks', tasks);
-      const pipeData = [...papers, ...projects].map(x => ({ id:x.id, done_stages:x.done, note:x.note, dtype: PAPERS_DEF.find(p=>p.id===x.id)?'paper':'project' }));
-      await SB.upsert('pipeline', pipeData);
-      setSyncDot('', 'Synced ✓ — all data pushed to Supabase');
-      toast('Synced to Supabase ✓');
-    } catch(e) {
-      setSyncDot('error', 'Sync failed: ' + e.message);
-      toast('Sync error: ' + e.message, 'warn');
+// ─── CHECK AND NOTIFY ─────────────────────────────────────
+// Called on startup and every 30 minutes.
+// Each condition fires once per day via dedup.
+
+function checkAndNotify() {
+  if (!settings.puUser || !settings.puToken) return;
+
+  const now    = new Date();
+  const h      = now.getHours();
+  const mins   = h * 60 + now.getMinutes();  // minutes since midnight
+  const dow    = now.getDay();               // 0=Sun, 6=Sat
+
+  // ── 1. MORNING SUMMARY (8 AM+) ──────────────────────────
+  if (mins >= 8*60 && !notifiedToday('morning')) {
+    const shiftToday  = tasks.some(x => x.cat==='appointment' && x.date===today() && x.title.includes('Night shift'));
+    const urgentToday = tasks.filter(x => !x.done && x.date===today() && x.priority==='urgent');
+    const dueCount    = tasks.filter(x => !x.done && x.date===today()).length;
+    let msg = `Good morning ✦ ${dueCount} task${dueCount!==1?'s':''} today.`;
+    if (urgentToday.length) msg += ` 🔥 Urgent: ${urgentToday.map(x=>x.title).join(', ')}.`;
+    if (shiftToday) msg += ' 🌙 Night shift today — pack your bag.';
+    pushNotify(msg, 'Nafis · Morning', 0);
+    markNotified('morning');
+  }
+
+  // ── 2. IRON (8 AM+) ─────────────────────────────────────
+  const vLog = getVitLog();
+  if (mins >= 8*60 && !vLog.iron && !notifiedToday('iron')) {
+    pushNotify('🩸 Iron tablet — take on empty stomach.', 'Vitamins', 0);
+    markNotified('iron');
+  }
+
+  // ── 3. OMEGA-3 + EYE VITAMIN (1 PM+) ────────────────────
+  if (mins >= 13*60 && (!vLog.omega3 || !vLog.eye) && !notifiedToday('lunch-vit')) {
+    const missing = [!vLog.omega3 && 'Omega-3 🐟', !vLog.eye && 'Eye vitamin 👁'].filter(Boolean).join(' + ');
+    pushNotify(`${missing} — take with lunch.`, 'Vitamins', 0);
+    markNotified('lunch-vit');
+  }
+
+  // ── 4. MAGNESIUM (9 PM+) ─────────────────────────────────
+  if (mins >= 21*60 && !vLog.mg && !notifiedToday('mg')) {
+    pushNotify('🔮 Magnesium — take before bed.', 'Vitamins', 0);
+    markNotified('mg');
+  }
+
+  // ── 5. NIGHT SHIFT REMINDER (6 PM+) ─────────────────────
+  if (mins >= 18*60 && !notifiedToday('shift')) {
+    const shiftToday = tasks.some(x => x.cat==='appointment' && x.date===today() && x.title.includes('Night shift'));
+    if (shiftToday) {
+      pushNotify('🌙 Night shift tonight — bag packed? Food sorted?', 'Night Shift', 1);
+      markNotified('shift');
     }
   }
 
-  closeSettings();
-  toast('Settings saved');
-}
+  // ── 6. URGENT DEADLINES (any time) ──────────────────────
+  if (!notifiedToday('deadline')) {
+    const urgent = tasks.filter(x => !x.done && x.priority==='urgent' && x.date && daysUntil(x.date)<=1 && daysUntil(x.date)>=0);
+    if (urgent.length) {
+      const msg = urgent.map(x => `${x.title} (${daysUntil(x.date)===0?'TODAY':'tomorrow'})`).join(' · ');
+      pushNotify('🔥 ' + msg, 'Deadline', 1);
+      markNotified('deadline');
+    }
+  }
 
-// ════════════════════════════════════════════════════════════
-//  NAV
-// ════════════════════════════════════════════════════════════
+  // ── 7. BIRTHDAY (any time, day-of) ───────────────────────
+  if (!notifiedToday('birthday')) {
+    const bday = tasks.find(x => !x.done && x.date===today() && x.title.toLowerCase().includes('birthday'));
+    if (bday) { pushNotify('🎂 ' + bday.title, 'Birthday', 0); markNotified('birthday'); }
+  }
 
-function showPanel(id, btn) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('panel-' + id).classList.add('active');
-  btn.classList.add('active');
-  if (id === 'today')    renderToday();
-  if (id === 'pipeline') renderPipeline();
-  if (id === 'report')   renderStats();
-}
-
-// ════════════════════════════════════════════════════════════
-//  UTILS
-// ════════════════════════════════════════════════════════════
-
-function today()         { return new Date().toISOString().slice(0, 10); }
-function addDays(d, n)   { const x = new Date(d + 'T12:00:00'); x.setDate(x.getDate() + n); return x.toISOString().slice(0, 10); }
-function daysUntil(d)    { return Math.ceil((new Date(d + 'T12:00:00') - new Date(today() + 'T12:00:00')) / 86400000); }
-function fmt(d)          { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month:'short', day:'numeric' }); }
-function esc(s)          { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function autoResize(el)  { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px'; }
-function mdToHtml(s)     { return esc(s).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\*(.*?)\*/g,'<em>$1</em>').replace(/\n/g,'<br>'); }
-
-let toastT;
-function toast(msg, type = 'ok') {
-  const el = document.getElementById('toast');
-  el.textContent    = msg;
-  el.style.borderColor = type === 'warn' ? 'var(--warn)' : 'var(--cyan)';
-  el.style.color       = type === 'warn' ? 'var(--warn)' : 'var(--cyan)';
-  el.classList.add('show');
-  clearTimeout(toastT);
-  toastT = setTimeout(() => el.classList.remove('show'), 2800);
-}
-
-// ════════════════════════════════════════════════════════════
-//  START
-// ════════════════════════════════════════════════════════════
-
-function setAppIcon() {
-  const c = document.createElement('canvas');
-  c.width = c.height = 180;
-  const x = c.getContext('2d');
-  // Blue-to-teal gradient background
-  const g = x.createLinearGradient(0, 0, 180, 180);
-  g.addColorStop(0, '#0a1929');
-  g.addColorStop(1, '#00c8e0');
-  x.fillStyle = g;
-  x.beginPath();
-  x.roundRect(0, 0, 180, 180, 38);
-  x.fill();
-  // Cyan glow circle
-  x.beginPath();
-  x.arc(90, 90, 52, 0, Math.PI * 2);
-  x.strokeStyle = 'rgba(0,200,224,0.35)';
-  x.lineWidth = 18;
-  x.stroke();
-  // "N" letter
-  x.fillStyle = '#00c8e0';
-  x.font = 'bold 88px -apple-system, system-ui';
-  x.textAlign = 'center';
-  x.textBaseline = 'middle';
-  x.fillText('N', 90, 93);
-  // Apply as apple-touch-icon
-  const link = document.querySelector("link[rel='apple-touch-icon']") || document.createElement('link');
-  link.rel = 'apple-touch-icon';
-  link.href = c.toDataURL('image/png');
-  document.head.appendChild(link);
-}
-   
-setAppIcon();
-init();
-</script>
-</body>
-</html>
+  // ── 8. WEEKLY NUDGE (Sunday 10 AM+) ─────────────────────
+  if (dow===0 && mins>=10*60 && !notifiedToday('weekly')) {
+    const stuck = [...papers,...projects].filter(p => p.done < p.stages.length-1);
+    pushNotify(`Weekly check: ${stuck.length} papers/projects need 
