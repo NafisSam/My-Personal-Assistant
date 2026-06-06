@@ -31,8 +31,10 @@
   --f:     'Inter', system-ui, sans-serif;
 }
 *,*::before,*::after { box-sizing:border-box; margin:0; padding:0 }
-html,body { height:100%; overflow:hidden }
-body { font-family:var(--f); background:var(--bg); color:var(--text); display:flex; flex-direction:column }
+/* iOS standalone mode: use dvh and safe-area insets */
+html { height: 100dvh; height: -webkit-fill-available; }
+body { font-family:var(--f); background:var(--bg); color:var(--text); display:flex; flex-direction:column;
+       height: 100dvh; height: -webkit-fill-available; overflow:hidden; }
 ::-webkit-scrollbar { width:4px }
 ::-webkit-scrollbar-thumb { background:var(--bd); border-radius:4px }
 ::selection { background:var(--cyan); color:#000 }
@@ -43,7 +45,9 @@ body { font-family:var(--f); background:var(--bg); color:var(--text); display:fl
 .panel.active { display:block }
 
 /* ─── TOPBAR ─── */
-.topbar { padding:14px 18px 10px; background:var(--bg); position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(20,47,80,.5) }
+/* padding-top: safe-area pushes content below iOS status bar in standalone mode */
+.topbar { padding:14px 18px 10px; padding-top:calc(14px + env(safe-area-inset-top));
+          background:var(--bg); position:sticky; top:0; z-index:50; border-bottom:1px solid rgba(20,47,80,.5) }
 .topbar-row { display:flex; align-items:center; justify-content:space-between; gap:8px }
 .greeting { font-size:19px; font-weight:800; letter-spacing:-.02em; background:linear-gradient(90deg,var(--cyan),var(--teal)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text }
 .today-date { font-size:11px; color:var(--muted); margin-top:1px }
@@ -56,9 +60,11 @@ body { font-family:var(--f); background:var(--bg); color:var(--text); display:fl
 @keyframes blink2 { 0%,100%{opacity:1} 50%{opacity:.3} }
 .gear-btn { background:var(--s2); border:1px solid var(--bd); border-radius:8px; color:var(--muted); padding:6px 8px; cursor:pointer; font-size:14px; transition:color .15s }
 .gear-btn:hover { color:var(--cyan) }
+@keyframes spin { to { transform: rotate(360deg) } }
 
 /* ─── TABS ─── */
-.tab-bar { height:58px; background:var(--s1); border-top:1px solid var(--bd); display:flex; flex-shrink:0; z-index:100; padding-bottom:env(safe-area-inset-bottom) }
+/* height + safe-area-inset-bottom ensures tabs sit above iPhone home indicator */
+.tab-bar { height:calc(58px + env(safe-area-inset-bottom)); background:var(--s1); border-top:1px solid var(--bd); display:flex; flex-shrink:0; z-index:100; padding-bottom:env(safe-area-inset-bottom) }
 .tab { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; border:none; background:none; color:var(--muted); font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; cursor:pointer; transition:color .15s }
 .tab .icon { font-size:17px }
 .tab.active { color:var(--cyan) }
@@ -210,6 +216,7 @@ body { font-family:var(--f); background:var(--bg); color:var(--text); display:fl
       </div>
       <div class="topbar-right">
         <div class="sync-dot offline" id="syncDot" title="Sync status"></div>
+        <button class="gear-btn" onclick="forceSync()" title="Refresh from cloud" id="refreshBtn">↻</button>
         <button class="gear-btn" onclick="openSettings()">⚙</button>
       </div>
     </div>
@@ -1099,6 +1106,38 @@ function openSettings() {
 
 function closeSettings() {
   document.getElementById('drawerOverlay').classList.remove('show');
+}
+
+// Force pull latest data from Supabase — use the ↻ button when you expect changes from another device
+async function forceSync() {
+  if (!SB.ready) { toast('No Supabase connection — add keys in ⚙', 'warn'); return; }
+  const btn = document.getElementById('refreshBtn');
+  btn.style.animation = 'spin .6s linear infinite';
+  setSyncDot('syncing', 'Fetching latest…');
+  try {
+    const [sbTasks, sbPipe] = await Promise.all([
+      SB.get('tasks', 'select=*&order=created_at.desc'),
+      SB.get('pipeline', 'select=*')
+    ]);
+    if (sbTasks.length) {
+      tasks = sbTasks;
+      localStorage.setItem('nos_tasks', JSON.stringify(tasks));
+    }
+    sbPipe.forEach(row => {
+      const p = [...papers, ...projects].find(x => x.id === row.id);
+      if (p) p.done = row.done_stages;
+    });
+    setSyncDot('', 'Synced ✓');
+    renderToday();
+    renderPipeline();
+    renderStats();
+    toast('Refreshed ✓');
+  } catch(e) {
+    setSyncDot('error', 'Refresh failed: ' + e.message);
+    toast('Refresh failed: ' + e.message, 'warn');
+  } finally {
+    btn.style.animation = '';
+  }
 }
 
 async function saveSettings() {
