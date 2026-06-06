@@ -1210,6 +1210,39 @@ function toast(msg, type = 'ok') {
 // ════════════════════════════════════════════════════════════
 //  START
 // ════════════════════════════════════════════════════════════
+
+function setAppIcon() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 180;
+  const x = c.getContext('2d');
+  // Blue-to-teal gradient background
+  const g = x.createLinearGradient(0, 0, 180, 180);
+  g.addColorStop(0, '#0a1929');
+  g.addColorStop(1, '#00c8e0');
+  x.fillStyle = g;
+  x.beginPath();
+  x.roundRect(0, 0, 180, 180, 38);
+  x.fill();
+  // Cyan glow circle
+  x.beginPath();
+  x.arc(90, 90, 52, 0, Math.PI * 2);
+  x.strokeStyle = 'rgba(0,200,224,0.35)';
+  x.lineWidth = 18;
+  x.stroke();
+  // "N" letter
+  x.fillStyle = '#00c8e0';
+  x.font = 'bold 88px -apple-system, system-ui';
+  x.textAlign = 'center';
+  x.textBaseline = 'middle';
+  x.fillText('N', 90, 93);
+  // Apply as apple-touch-icon
+  const link = document.querySelector("link[rel='apple-touch-icon']") || document.createElement('link');
+  link.rel = 'apple-touch-icon';
+  link.href = c.toDataURL('image/png');
+  document.head.appendChild(link);
+}
+   
+setAppIcon();
 init();
 </script>
 </body>
